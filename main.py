@@ -2,7 +2,12 @@ from data import Data
 
 def main():
     data = Data(json_path = 'lemkin-json-from-html', pdf_path = 'lemkin-pdf')
-    print(data.number_of_files())
+
+    # how many files are there in both directories
+    print("Detected {} .json and {} .pdf files".format(str(data.number_of_files()[0]), str(data.number_of_files()[1])))
+
+    # read json data, for example for now
+    # data.read_json_data()
 
 if __name__ == '__main__':
     main()
