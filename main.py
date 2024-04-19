@@ -9,5 +9,8 @@ def main():
     # read json data, for example for now
     # data.read_json_data()
 
+    # load pdf as image
+    data.load_pdf_as_image()
+
 if __name__ == '__main__':
     main()
