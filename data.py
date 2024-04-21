@@ -1,6 +1,7 @@
 import os
 import json
 import pdf2image
+import pypdfium2
 
 class Data():
     def __init__(self, json_path = None, pdf_path = None):
@@ -37,12 +38,19 @@ class Data():
 
     def load_pdf_as_image(self):
         test_pdf_path = "lemkin-pdf/2014/WDU20140000596/O/D20140596.pdf"
-        print(len(test_pdf_path))
 
         # convert pdf to image
         images = pdf2image.convert_from_path(test_pdf_path)
 
         # save pages as separate images
-        for i in range(len(images)):
-            images[i].save('page'+ str(i) +'.jpg', 'JPEG')
+        folder_path = 'pdf_images'
+
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        for i, image in enumerate(images):
+            image.save(f'{folder_path}/page_{i}.jpg', 'JPEG')
+
+    def read_pdf_data(self):
+        pass
         
