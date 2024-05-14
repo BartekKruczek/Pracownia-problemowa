@@ -2,5 +2,7 @@ lemkin-pdf/
 lemkin-json-from-html/
 pdf_images/
 znaki/
+zdekodowane/
+__pycache__/
 .DS_Store
 *.out
