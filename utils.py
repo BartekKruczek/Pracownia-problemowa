@@ -39,7 +39,3 @@ class Utils():
                     img_arr[i*bits_in_byte + j] = idle_pixel
         img_arr = img_arr.reshape((IMG_SIDE_LENGTH, IMG_SIDE_LENGTH))
         return img_arr
-    
-my_utils = Utils(load_path = './zdekodowane')
-signs, binarized_signs, labels, signs_dictionary = my_utils.load_files()
-decoded_image = my_utils.decode_image_from_binarized(binarized_signs[0])
