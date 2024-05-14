@@ -1,5 +1,6 @@
 lemkin-pdf/
 lemkin-json-from-html/
 pdf_images/
+znaki/
 .DS_Store
 *.out
