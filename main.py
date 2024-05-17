@@ -1,5 +1,6 @@
 from data import Data
 from utils import Utils
+from OCR_model import OCRModel
 
 def main():
     data = Data(json_path = 'lemkin-json-from-html', pdf_path = 'lemkin-pdf')
