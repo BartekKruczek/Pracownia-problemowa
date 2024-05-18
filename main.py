@@ -27,7 +27,7 @@ def main():
     print("Dataset length: ", dataset.__len__())
 
     # model section
-    model = OCRModel()
+    # model = OCRModel()
 
 if __name__ == '__main__':
     main()

@@ -1,3 +1,4 @@
+from utils import Utils
 from torch.utils.data import Dataset, DataLoader
 
 class OCRDataset(Dataset):
@@ -9,3 +10,20 @@ class OCRDataset(Dataset):
 
     def __len__(self):
         return len(self.signs)
+    
+    def __repr__(self) -> str:
+        return "Klasa stworzona do obsługi zbioru danych dla modelu OCR, własny dataset"
+    
+    def __getitem__(self, idx):
+        sign = self.signs[idx]
+        binarized_sign = self.binarized_signs[idx]
+        label = self.labels[idx]
+
+        # Dekodowanie obrazu
+        image = Utils.decode_image_from_binarized(binarized_sign)
+
+        # if transform implemented, default is None
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
