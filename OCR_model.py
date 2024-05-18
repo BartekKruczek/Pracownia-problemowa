@@ -13,7 +13,9 @@ class OCRModel(torch.nn.Module):
         self.maxpool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
         self.flatten = torch.nn.Flatten()
         self.dense1 = torch.nn.Linear(in_features=128 * 4 * 4, out_features=256)
+        self.dropout1 = torch.nn.Dropout(p=0.5)
         self.dense2 = torch.nn.Linear(in_features=256, out_features=128)
+        self.dropout2 = torch.nn.Dropout(p=0.5)
         self.dense3 = torch.nn.Linear(in_features=128, out_features=89)
 
     def __repr__(self) -> str:
@@ -28,7 +30,9 @@ class OCRModel(torch.nn.Module):
         x = self.maxpool3(x)
         x = self.flatten(x)
         x = self.dense1(x)
+        x = self.dropout1(x)
         x = self.dense2(x)
+        x = self.dropout2(x)
         x = self.dense3(x)
         return x
     
