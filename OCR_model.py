@@ -36,8 +36,13 @@ class OCRModel(torch.nn.Module):
         x = self.dense3(x)
         return x
     
-    def train_model(self, train_loader: DataLoader, val_loader: DataLoader, criterion, optimizer, scheduler, epochs: int) -> None:
-        summary(self, (1, 32, 32))
+    def train_model(self, train_loader: DataLoader, val_loader: DataLoader, criterion, optimizer, scheduler, device, epochs: int) -> None:
+        self.to("cpu")
+
+        summary_device = "cpu"
+        summary(self, (1, 32, 32), device=str(summary_device))
+        
+        self.to(device)
         self.train()
 
         for epoch in range(epochs):
@@ -48,8 +53,8 @@ class OCRModel(torch.nn.Module):
             # Training phase
             self.train()
             for images, labels in train_loader:
-                images = images.unsqueeze(1).float()
-                labels = labels.long()
+                images = images.unsqueeze(1).float().to(device)
+                labels = labels.long().to(device)
 
                 optimizer.zero_grad()
                 outputs = self(images)
@@ -66,7 +71,6 @@ class OCRModel(torch.nn.Module):
             epoch_loss = running_loss / len(train_loader)
             accuracy = 100 * correct / total
             current_lr = optimizer.param_groups[0]['lr']
-
             print(f"Epoch [{epoch + 1}/{epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy:.2f}%, LR: {current_lr:.6f}")
 
             # Validation phase
@@ -76,8 +80,8 @@ class OCRModel(torch.nn.Module):
             val_total = 0
             with torch.no_grad():
                 for images, labels in val_loader:
-                    images = images.unsqueeze(1).float()
-                    labels = labels.long()
+                    images = images.unsqueeze(1).float().to(device)
+                    labels = labels.long().to(device)
 
                     outputs = self(images)
                     loss = criterion(outputs, labels)
@@ -90,18 +94,17 @@ class OCRModel(torch.nn.Module):
             val_epoch_loss = val_loss / len(val_loader)
             val_accuracy = 100 * val_correct / val_total
             print(f"Epoch [{epoch + 1}/{epochs}], Val Loss: {val_epoch_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%")
-
             scheduler.step()
     
-    def test_model(self, test_loader: DataLoader, criterion) -> None:
-        self.eval()
+    def test_model(self, test_loader: DataLoader, criterion, device) -> None:
+        self.eval().to(device)
         test_loss = 0.0
         test_correct = 0
         test_total = 0
         with torch.no_grad():
             for images, labels in test_loader:
-                images = images.unsqueeze(1).float()
-                labels = labels.long()
+                images = images.unsqueeze(1).float().to(device)
+                labels = labels.long().to(device)
 
                 outputs = self(images)
                 loss = criterion(outputs, labels)

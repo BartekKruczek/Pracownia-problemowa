@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=Test
-#SBATCH --time=00:15:00
+#SBATCH --time=01:00:00
 #SBATCH --account=plgexaile2-gpu-a100
 #SBATCH --partition=plgrid-gpu-a100
 #SBATCH --cpus-per-task=4

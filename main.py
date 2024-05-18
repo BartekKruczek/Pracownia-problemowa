@@ -25,7 +25,7 @@ def main():
     print("Dataset sample: ", dataset[0][0].shape)
 
     # Split the dataset
-    train_size = int(0.8 * len(dataset))
+    train_size = int(0.7 * len(dataset))
     val_size = int(0.1 * len(dataset))
     test_size = len(dataset) - train_size - val_size
 
@@ -36,14 +36,20 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
     # model section
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
     model = OCRModel()
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
-    model.train_model(train_loader, val_loader, criterion, optimizer, scheduler, epochs=10)
-    model.test_model(test_loader, criterion)
+    model.train_model(train_loader, val_loader, criterion, optimizer, scheduler, device, epochs=10)
+    model.test_model(test_loader, criterion, device)
 
 if __name__ == '__main__':
     main()
