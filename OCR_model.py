@@ -29,3 +29,9 @@ class OCRModel(torch.nn.Module):
         x = self.dense2(x)
         x = self.dense3(x)
         return x
+    
+    def convert_data_to_tensor(self, data: list) -> torch.Tensor:
+        return torch.tensor(data)
+    
+    def train_model(self, datas: torch.Tensor, labels: int) -> None:
+        pass
