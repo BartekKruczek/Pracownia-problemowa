@@ -1,18 +1,20 @@
 import torch
+from torch.utils.data import Dataset
+from torchsummary import summary
 
 class OCRModel(torch.nn.Module):
     def __init__(self) -> torch.nn.Module:
         super(OCRModel, self).__init__()
-        self.conv1 = torch.nn.Conv2d(None, 26, 26, 32)
-        self.maxpool1 = torch.nn.MaxPool2d(None, 13, 13, 32)
-        self.conv2 = torch.nn.Conv2d(None, 13, 13, 64)
-        self.maxpool2 = torch.nn.MaxPool2d(None, 6, 6, 64)
-        self.conv3 = torch.nn.Conv2d(None, 6, 6, 128)
-        self.maxpool3 = torch.nn.MaxPool2d(None, 3, 3, 128)
-        self.flatten = torch.nn.Flatten(None, 1152)
-        self.dense1 = torch.nn.Linear(None, 64)
-        self.dense2 = torch.nn.Linear(None, 128)
-        self.dense3 = torch.nn.Linear(None, 36)
+        self.conv1 = torch.nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1)
+        self.maxpool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv2 = torch.nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.maxpool2 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv3 = torch.nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
+        self.maxpool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        self.flatten = torch.nn.Flatten()
+        self.dense1 = torch.nn.Linear(in_features=128 * 4 * 4, out_features=256)
+        self.dense2 = torch.nn.Linear(in_features=256, out_features=128)
+        self.dense3 = torch.nn.Linear(in_features=128, out_features=89)
 
     def __repr__(self) -> str:
         return "OCRModel do treningu modelu OCR"
@@ -33,5 +35,22 @@ class OCRModel(torch.nn.Module):
     def convert_data_to_tensor(self, data: list) -> torch.Tensor:
         return torch.tensor(data)
     
-    def train_model(self, datas: torch.Tensor, labels: int) -> None:
-        pass
+    def train_model(self, model: torch.nn.Module, dataloader: Dataset, criterion, optimizer, epochs) -> None:
+        summary(model, (1, 32, 32))
+        model.train()
+        for epoch in range(epochs):
+            running_loss = 0.0
+            for images, labels in dataloader:
+                images = images.unsqueeze(1).float()
+                labels = labels.long()
+
+                optimizer.zero_grad()
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item()
+
+            epoch_loss = running_loss / len(dataloader)
+            print(f"Epoch [{epoch + 1}/{epochs}], Loss: {epoch_loss:.4f}")

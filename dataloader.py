@@ -1,5 +1,5 @@
 from utils import Utils
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 class OCRDataset(Dataset):
     def __init__(self, signs, binarized_signs, labels, transform=None):

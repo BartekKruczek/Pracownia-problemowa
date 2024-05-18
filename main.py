@@ -1,7 +1,9 @@
+import torch
 from data import Data
 from utils import Utils
 from OCR_model import OCRModel
 from dataloader import OCRDataset
+from torch.utils.data import DataLoader
 
 def main():
     data = Data(json_path = 'lemkin-json-from-html', pdf_path = 'lemkin-pdf')
@@ -25,9 +27,17 @@ def main():
     # dataset section
     dataset = OCRDataset(signs, binarized_signs, labels)
     print("Dataset length: ", dataset.__len__())
+    print("Dataset sample: ", dataset.__getitem__(0)[0].shape)
+
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
     # model section
-    # model = OCRModel()
+    model = OCRModel()
+
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+    model.train_model(model, dataloader, criterion, optimizer, epochs=10)
 
 if __name__ == '__main__':
     main()
