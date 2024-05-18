@@ -32,9 +32,6 @@ class OCRModel(torch.nn.Module):
         x = self.dense3(x)
         return x
     
-    def convert_data_to_tensor(self, data: list) -> torch.Tensor:
-        return torch.tensor(data)
-    
     def train_model(self, train_loader: DataLoader, val_loader: DataLoader, criterion, optimizer, scheduler, epochs: int) -> None:
         summary(self, (1, 32, 32))
         self.train()
