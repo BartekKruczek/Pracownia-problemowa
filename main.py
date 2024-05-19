@@ -46,9 +46,9 @@ def main():
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.3)
 
-    model.train_model(train_loader, val_loader, criterion, optimizer, scheduler, device, epochs=10)
+    model.train_model(train_loader, val_loader, criterion, optimizer, scheduler, device, epochs=20)
     model.test_model(test_loader, criterion, device)
 
 if __name__ == '__main__':
