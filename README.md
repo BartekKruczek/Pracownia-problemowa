@@ -10,6 +10,7 @@
 - [parseq](https://github.com/baudm/parseq)
 - [trocr](https://github.com/microsoft/unilm/tree/master/trocr)
 - [microsoft trocr](https://huggingface.co/microsoft/trocr-base-handwritten)
+- [layoutlm3](https://huggingface.co/docs/transformers/model_doc/layoutlmv3)
 
 ## Przykładowe papery -> na później
 - [OCR z NLP corektą](https://ieeexplore-1ieee-1org-1000047nk00e3.wbg2.bg.agh.edu.pl/document/10463478)
@@ -22,3 +23,20 @@
 - [Scene Text Detection](https://paperswithcode.com/task/scene-text-detection)
 - [Vision Transformer for Fast and Efficient Scene Text Recognition](https://arxiv.org/pdf/2105.08582)
 - [TrOCR: Transformer-based Optical Character Recognition with Pre-trained Models](https://paperswithcode.com/paper/trocr-transformer-based-optical-character)
+- [TextMonkey: An OCR-Free Large Multimodal Model for Understanding Document](https://arxiv.org/pdf/2403.04473)
+- [CORD: A Consolidated Receipt Dataset for Post-OCR Parsing](https://openreview.net/pdf?id=SJl3z659UH)
+
+## Biblioteki
+- [paddleocr](https://pypi.org/project/paddleocr/)
+- [tesseract na githubie](https://github.com/tesseract-ocr/tesseract)
+- [tesseractocr na pypi](https://github.com/sirfz/tesserocr)
+- [ocrd-tesserocr](https://pypi.org/project/ocrd-tesserocr/)
+- [pytesseract](https://pypi.org/project/pytesseract/)
+- [pylcs](https://pypi.org/project/pylcs/)
+
+## Opisy modeli, np. na Medium
+- [The Role of LayoutLMv3 in Document Layout Understanding in 2024](https://medium.com/ubiai-nlp/the-role-of-layoutlmv3-in-document-layout-understanding-in-2024-46d505105cfb)
+- [Tesseract OCR: What Is It, and Why Would You Choose It in 2024?](https://www.klippa.com/en/blog/information/tesseract-ocr/)
+- [OCR Unlocked: A Guide to Tesseract in Python with Pytesseract and OpenCV](https://nanonets.com/blog/ocr-with-tesseract/)
+- [Convert data from PDFs to JSON outputs](https://medium.com/nanonets/convert-data-from-pdfs-to-json-outputs-4bf32d50cfd2)
+- [Finetune LLM to convert a receipt image to json or xml](https://mychen76.medium.com/finetune-llm-to-convert-a-receipt-image-to-json-or-xml-3f9a6237e991)
