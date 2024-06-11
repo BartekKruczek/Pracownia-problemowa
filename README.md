@@ -11,6 +11,8 @@
 - [trocr](https://github.com/microsoft/unilm/tree/master/trocr)
 - [microsoft trocr](https://huggingface.co/microsoft/trocr-base-handwritten)
 - [layoutlm3](https://huggingface.co/docs/transformers/model_doc/layoutlmv3)
+- [PaliGemma – Google's Cutting-Edge Open Vision Language Model](https://huggingface.co/blog/paligemma)
+- [mychen76/invoice-and-receipts_donut_v1](https://huggingface.co/mychen76/invoice-and-receipts_donut_v1)
 
 ## Przykładowe papery -> na później
 - [OCR z NLP corektą](https://ieeexplore-1ieee-1org-1000047nk00e3.wbg2.bg.agh.edu.pl/document/10463478)
@@ -33,10 +35,13 @@
 - [ocrd-tesserocr](https://pypi.org/project/ocrd-tesserocr/)
 - [pytesseract](https://pypi.org/project/pytesseract/)
 - [pylcs](https://pypi.org/project/pylcs/)
+- [jsonformer](https://github.com/1rgs/jsonformer)
 
 ## Opisy modeli, np. na Medium
 - [The Role of LayoutLMv3 in Document Layout Understanding in 2024](https://medium.com/ubiai-nlp/the-role-of-layoutlmv3-in-document-layout-understanding-in-2024-46d505105cfb)
 - [Tesseract OCR: What Is It, and Why Would You Choose It in 2024?](https://www.klippa.com/en/blog/information/tesseract-ocr/)
 - [OCR Unlocked: A Guide to Tesseract in Python with Pytesseract and OpenCV](https://nanonets.com/blog/ocr-with-tesseract/)
 - [Convert data from PDFs to JSON outputs](https://medium.com/nanonets/convert-data-from-pdfs-to-json-outputs-4bf32d50cfd2)
+- [Finetune LLM to convert a receipt image to json or xml](https://mychen76.medium.com/finetune-llm-to-convert-a-receipt-image-to-json-or-xml-3f9a6237e991)
+- [PaliGemma Vision-Language Model](https://medium.com/@nimritakoul01/paligemma-vision-language-model-22693c2a4dec)
 - [Finetune LLM to convert a receipt image to json or xml](https://mychen76.medium.com/finetune-llm-to-convert-a-receipt-image-to-json-or-xml-3f9a6237e991)
