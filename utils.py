@@ -1,4 +1,5 @@
 import os
+import pdf2image
 
 class Utils():
     def __init__(self, json_path: str) -> None:
@@ -31,6 +32,29 @@ class Utils():
     def create_pdf_folder(dir: str) -> None:
         if not os.path.exists(dir):
             os.makedirs(dir)
+
+    def create_png_folder(self, generator):
+        # stripping last element from path
+        for elem in generator:
+            dir_without_last = elem.split('/')[:-1]
+            dir_without_last = '/'.join(dir_without_last)
+            
+            # creating new directory with _png suffix
+            new_dir = dir_without_last + '_png'
+        
+        yield new_dir
+
+    def convert_pdf_to_png(self, iterator) -> None:
+        """
+        Converts pdf file to png and saves it in specified directory
+        """
+        for elem in iterator:
+            new_elem = elem.split('/')
+            new_elem = new_elem[0] + "/" + new_elem[1] + "/" + new_elem[2] + "/" + new_elem[3] + "/" + '_png'
+            
+            if not os.path.exists(new_elem):
+                os.makedirs(new_elem)
+        
 
     def delete_unwanted_dir(self, dir: str) -> None:
         """

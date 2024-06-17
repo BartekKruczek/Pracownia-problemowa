@@ -8,11 +8,9 @@ def main():
     # how many files are there in both directories
     print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
 
-    # yeilding files from json folder
-    # print(*utils.json_folder_iterator())
+    # testing section
+    print(utils.convert_pdf_to_png(data.yield_pdf_files()))
 
-    # yeilding files from pdf folder
-    print(*data.pdf_file_to_png())
 
 if __name__ == '__main__':
     main()

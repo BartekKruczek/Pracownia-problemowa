@@ -1,5 +1,19 @@
 # Pracownia-problemowa
 
+Struktura folderów
+
+- lemkin-pdf
+  |
+  |
+  - subfolder1
+  |
+  |
+    - subfolder2
+    |
+    |
+    - pdf
+    - _png folder
+
 ## ViT -> Vision Transformer
 - [Pierwszy paper](https://paperswithcode.com/method/vision-transformer)
 - [Objaśnienie na medium](https://medium.com/@hansahettiarachchi/unveiling-vision-transformers-revolutionizing-computer-vision-beyond-convolution-c410110ef061)

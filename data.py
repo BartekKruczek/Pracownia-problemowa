@@ -1,6 +1,7 @@
 import os
 import json
 import pdf2image
+import pandas as pd
 
 from utils import Utils
 
@@ -11,6 +12,9 @@ class Data():
 
     def __repr__(self) -> str:
         return 'Data handler'
+    
+    def dataframe_handler(self):
+        pass
     
     def number_of_files(self):
         files_counter_json = 0
@@ -55,7 +59,7 @@ class Data():
     def read_pdf_data(self):
         pass
 
-    def pdf_file_to_png(self):
+    def yield_pdf_folders(self):
         """
         Converts pdf file to png, creates subfolder with pngs. Localization is the same as pdf file.
         """
@@ -64,6 +68,14 @@ class Data():
                 for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
                     for dir2 in dirs2:
                         yield os.path.join(root2, dir2)
-                        for file2 in os.listdir(os.path.join(root2, dir2)):
-                            if file2.endswith('.pdf'):
-                                continue
+
+    def yield_pdf_files(self):
+        """
+        Yields pdf files, string format path to file
+        """
+        for root, dirs, files in os.walk(self.pdf_path):
+            for dir in dirs:
+                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                    for file in files2:
+                        if file.endswith('.pdf'):
+                            yield os.path.join(root2, file)
