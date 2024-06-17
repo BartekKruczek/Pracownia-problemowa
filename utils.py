@@ -27,3 +27,7 @@ class Utils():
                 for file in os.listdir(os.path.join(root, dir)):
                     if file.endswith('.json'):
                         yield file
+
+    def create_pdf_folder(dir: str) -> None:
+        if not os.path.exists(dir):
+            os.makedirs(dir)

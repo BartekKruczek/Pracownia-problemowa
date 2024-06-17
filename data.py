@@ -1,7 +1,8 @@
 import os
 import json
 import pdf2image
-import pypdfium2
+
+from utils import Utils
 
 class Data():
     def __init__(self, json_path = None, pdf_path = None):
@@ -62,6 +63,14 @@ class Data():
             for dir in dirs:
                 for root, dirs, files in os.walk(os.path.join(root, dir)):
                     for dir in dirs:
+                        Utils.create_pdf_folder(os.path.join(root, dir) + '_png')
                         for file in os.listdir(os.path.join(root, dir)):
                             if file.endswith('.pdf'):
                                 yield file
+
+    def delete_unwanted_dir(self, dir: str):
+        """
+        Deletes unwanted directory
+        """
+        if os.path.exists(dir):
+            os.rmdir(dir)
