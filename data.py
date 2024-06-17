@@ -61,16 +61,9 @@ class Data():
         """
         for root, dirs, files in os.walk(self.pdf_path):
             for dir in dirs:
-                for root, dirs, files in os.walk(os.path.join(root, dir)):
-                    for dir in dirs:
-                        Utils.create_pdf_folder(os.path.join(root, dir) + '_png')
-                        for file in os.listdir(os.path.join(root, dir)):
-                            if file.endswith('.pdf'):
-                                yield file
-
-    def delete_unwanted_dir(self, dir: str):
-        """
-        Deletes unwanted directory
-        """
-        if os.path.exists(dir):
-            os.rmdir(dir)
+                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                    for dir2 in dirs2:
+                        yield os.path.join(root2, dir2)
+                        for file2 in os.listdir(os.path.join(root2, dir2)):
+                            if file2.endswith('.pdf'):
+                                continue

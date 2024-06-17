@@ -31,3 +31,12 @@ class Utils():
     def create_pdf_folder(dir: str) -> None:
         if not os.path.exists(dir):
             os.makedirs(dir)
+
+    def delete_unwanted_dir(self, dir: str) -> None:
+        """
+        Deletes unwanted directory
+        """
+        for root, dirs, files in os.walk(dir):
+            for di in dirs:
+                if di.endswith('*_png'):
+                    os.rmdir(dir)
