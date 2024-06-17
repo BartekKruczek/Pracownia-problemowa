@@ -9,7 +9,10 @@ def main():
     print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
 
     # yeilding files from json folder
-    # print(utils.json_folder_iterator())
+    # print(*utils.json_folder_iterator())
+
+    # yeilding files from pdf folder
+    print(*data.pdf_file_to_png())
 
 if __name__ == '__main__':
     main()

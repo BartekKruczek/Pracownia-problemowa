@@ -22,11 +22,8 @@ class Utils():
         """
         Iterates over a directory with .json files
         """
-        files_counter_json = 0
         for root, dirs, files in os.walk(self.json_path):
             for dir in dirs:
                 for file in os.listdir(os.path.join(root, dir)):
                     if file.endswith('.json'):
-                        files_counter_json += 1
-                        print(file)
-        return files_counter_json
+                        yield file

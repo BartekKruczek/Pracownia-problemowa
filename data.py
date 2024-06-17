@@ -53,4 +53,15 @@ class Data():
 
     def read_pdf_data(self):
         pass
-        
+
+    def pdf_file_to_png(self):
+        """
+        Converts pdf file to png, creates subfolder with pngs. Localization is the same as pdf file.
+        """
+        for root, dirs, files in os.walk(self.pdf_path):
+            for dir in dirs:
+                for root, dirs, files in os.walk(os.path.join(root, dir)):
+                    for dir in dirs:
+                        for file in os.listdir(os.path.join(root, dir)):
+                            if file.endswith('.pdf'):
+                                yield file
