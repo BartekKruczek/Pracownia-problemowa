@@ -54,6 +54,15 @@ class Utils():
             
             if not os.path.exists(new_elem):
                 os.makedirs(new_elem)
+
+            # convert pdf to image
+            images = pdf2image.convert_from_path(elem)
+            print("Converted {} to png".format(elem))
+
+            # save pages as separate images into new_elem directory
+            for i, image in enumerate(images):
+                image.save(f'{new_elem}/page_{i}.png', 'PNG')
+                print("Saved page_{} as png".format(i))
         
 
     def delete_unwanted_dir(self, dir: str) -> None:
