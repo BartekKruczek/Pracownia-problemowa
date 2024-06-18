@@ -1,5 +1,6 @@
 import os
 import pdf2image
+import pypdfium2 as pdfium
 
 class Utils():
     def __init__(self, json_path: str) -> None:
@@ -56,13 +57,20 @@ class Utils():
                 os.makedirs(new_elem)
 
             # convert pdf to image
-            images = pdf2image.convert_from_path(elem)
-            print("Converted {} to png".format(elem))
+            pdf = pdfium.PdfDocument(elem)
+            n_pages = len(pdf)
 
             # save pages as separate images into new_elem directory
-            for i, image in enumerate(images):
-                image.save(f'{new_elem}/page_{i}.png', 'PNG')
-                print("Saved page_{} as png".format(i))
+            for page_number in range(n_pages):
+                page = pdf.get_page(page_number)
+                pil_image = page.render(
+                    scale=5,
+                    rotation=0,
+                )
+                new_image = pil_image.to_pil()
+                new_image.save(f"{new_elem}/page_{page_number}.png")
+
+            print("Converted {} to png".format(elem))
         
 
     def delete_unwanted_dir(self, dir: str) -> None:

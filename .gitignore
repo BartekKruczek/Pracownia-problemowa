@@ -6,3 +6,6 @@ zdekodowane/
 __pycache__/
 .DS_Store
 *.out
+.venv/
+.vscode/
+*.gz

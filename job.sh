@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=Test
-#SBATCH --time=01:00:00
+#SBATCH --time=05:00:00
 #SBATCH --account=plgexaile2-gpu-a100
 #SBATCH --partition=plgrid-gpu-a100
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=10GB
 #SBATCH --gres=gpu
 
-source /net/pr2/projects/plgrid/plgglemkin/isap/.venv/bin/activate
-cd /net/pr2/projects/plgrid/plgglemkin/isap
+source /net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa/.venv/bin/activate
+cd /net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa
 python3 main.py
