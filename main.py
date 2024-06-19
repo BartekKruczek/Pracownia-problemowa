@@ -14,6 +14,10 @@ def main():
     if once_converted:
         print(utils.convert_pdf_to_png(data.yield_pdf_files()))
 
+    # extract text from png
+    image_path = './lemkin-pdf/2014/WDU20140000596/O/_png/page_0.png'
+    print(data.get_text_from_png(image_path))
+
 
 if __name__ == '__main__':
     main()

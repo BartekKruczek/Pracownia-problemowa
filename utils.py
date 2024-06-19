@@ -1,5 +1,4 @@
 import os
-import pdf2image
 import pypdfium2 as pdfium
 
 class Utils():

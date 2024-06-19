@@ -1,9 +1,9 @@
 import os
 import json
 import pdf2image
-import pandas as pd
+import pytesseract
 
-from utils import Utils
+from PIL import Image
 
 class Data():
     def __init__(self, json_path = None, pdf_path = None):
@@ -75,7 +75,14 @@ class Data():
         """
         for root, dirs, files in os.walk(self.pdf_path):
             for dir in dirs:
-                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
-                    for file in files2:
-                        if file.endswith('.pdf'):
-                            yield os.path.join(root2, file)
+                if dir == "2014":
+                    for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                        for file in files2:
+                            if file.endswith('.pdf'):
+                                yield os.path.join(root2, file)
+
+    def get_text_from_png(self, image_path: str) -> str:
+        pytesseract.pytesseract.tesseract_cmd = "/net/people/plgrid/plgkruczek/.local/lib/python3.9/site-packages/tesseract"
+
+        image_data = pytesseract.image_to_data(Image.open(image_path), output_type=pytesseract.Output.DICT)
+        return image_data["text"]
