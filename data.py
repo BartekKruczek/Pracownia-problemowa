@@ -82,7 +82,7 @@ class Data():
                                 yield os.path.join(root2, file)
 
     def get_text_from_png(self, image_path: str) -> str:
-        pytesseract.pytesseract.tesseract_cmd = "/net/people/plgrid/plgkruczek/.local/lib/python3.9/site-packages/tesseract"
+        # pytesseract.pytesseract.tesseract_cmd = "/net/people/plgrid/plgkruczek/.local/lib/python3.9/site-packages/tesseract"
 
         image_data = pytesseract.image_to_data(Image.open(image_path), output_type=pytesseract.Output.DICT)
         return image_data["text"]
