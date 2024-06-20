@@ -1,5 +1,9 @@
 import os
 import pypdfium2 as pdfium
+import os
+import json
+
+from data import Data
 
 class Utils():
     def __init__(self, json_path: str) -> None:
@@ -8,7 +12,8 @@ class Utils():
     def __repr__(self) -> str:
         return "Klasa do obsługi różnych narzędzi"
     
-    def longest_common_subsequence(self, a, b):
+    # recursive
+    def longest_common_subsequence_r(self, a, b):
         """
         Returns the longest common subsequence of two strings
         """
@@ -18,6 +23,27 @@ class Utils():
             return 1 + self.longest_common_subsequence(a[:-1], b[:-1])
         else:
             return max(self.longest_common_subsequence(a, b[:-1]), self.longest_common_subsequence(a[:-1], b))
+        
+    # dynamic
+    def longest_common_subsequence_dynamic(self, a, b):
+        m = len(a)
+        n = len(b)
+
+        # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
+        L = [[None] * (n + 1) for i in range(m + 1)]
+
+        # budowanie tablicy L[m+1][n+1] w sposób bottom-up
+        for i in range(m + 1):
+            for j in range(n + 1):
+                if i == 0 or j == 0:
+                    L[i][j] = 0
+                elif a[i - 1] == b[j - 1]:
+                    L[i][j] = L[i - 1][j - 1] + 1
+                else:
+                    L[i][j] = max(L[i - 1][j], L[i][j - 1])
+
+        return L[m][n]
+
         
     def json_folder_iterator(self):
         """
@@ -70,6 +96,16 @@ class Utils():
                 new_image.save(f"{new_elem}/page_{page_number}.png")
 
             print("Converted {} to png".format(elem))
+
+    def yield_json_files(self):
+        """
+        Yields json files
+        """
+        for root, dirs, files in os.walk(self.json_path):
+            for dir in dirs:
+                for file in os.listdir(os.path.join(root, dir)):
+                    if file.endswith('.json'):
+                        yield os.path.join(root, dir, file)
         
 
     def delete_unwanted_dir(self, dir: str) -> None:
