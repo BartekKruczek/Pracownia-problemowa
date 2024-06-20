@@ -1,9 +1,9 @@
 import os
 import json
 import pdf2image
-import pandas as pd
+import pytesseract
 
-from utils import Utils
+from PIL import Image
 
 class Data():
     def __init__(self, json_path = None, pdf_path = None):
@@ -34,12 +34,28 @@ class Data():
 
         return files_counter_json, files_counter_pdf
     
-    def read_json_data(self):
-        root = "lemkin-json-from-html/1918/1918_2.json"
-
-        with open(root, encoding='utf-8') as f:
+    def read_json_data(self, file_path):
+        with open(file_path, encoding='utf-8') as f:
             data = json.load(f)
-            print(data)
+        return data
+    
+    def get_text_from_json(self, json_data: json) -> list[str]:
+        extracted_text = []
+
+        def recursive_search(node):
+            if isinstance(node, dict):
+                if 'text' in node and node['text']:
+                    extracted_text.append(node['text'])
+                for key in node:
+                    recursive_search(node[key])
+            elif isinstance(node, list):
+                for item in node:
+                    recursive_search(item)
+
+        recursive_search(json_data)
+        joined =  ''.join(extracted_text)
+
+        return joined
 
     def load_pdf_as_image(self):
         test_pdf_path = "lemkin-pdf/2014/WDU20140000596/O/D20140596.pdf"
@@ -75,7 +91,36 @@ class Data():
         """
         for root, dirs, files in os.walk(self.pdf_path):
             for dir in dirs:
-                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
-                    for file in files2:
-                        if file.endswith('.pdf'):
-                            yield os.path.join(root2, file)
+                if dir == "2014":
+                    for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                        for file in files2:
+                            if file.endswith('.pdf'):
+                                yield os.path.join(root2, file)
+
+    def get_text_from_png(self, image_path: str) -> str:
+        # pytesseract.pytesseract.tesseract_cmd = "/net/people/plgrid/plgkruczek/.local/lib/python3.9/site-packages/tesseract"
+
+        image_data = pytesseract.image_to_data(Image.open(image_path), output_type=pytesseract.Output.DICT)
+        return ' '.join(image_data["text"])
+    
+    def clean_text(self, list: list) -> list[str]:
+        # basicly iterate over the elements from list and remove blank spaces
+        return [elem for elem in list if elem.strip()]
+    
+    def combine_text_to_one_string(self, list: list) -> str:
+        return ''.join(list).lower()
+    
+    def clean_text_from_json(self, string: str) -> str:
+        return ''.join(string.split()).lower()
+    
+    def find_max_lcs(self, json_iterator, text_from_png, utils):
+        max_lcs = 0
+        max_file = None
+        for json_file in json_iterator:
+            json_data = self.read_json_data(json_file)
+            json_text = json.dumps(json_data)
+            current_lcs = utils.longest_common_subsequence(text_from_png, json_text)
+            if current_lcs > max_lcs:
+                max_lcs = current_lcs
+                max_file = json_file
+        return max_file, max_lcs
