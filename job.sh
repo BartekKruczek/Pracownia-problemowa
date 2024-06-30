@@ -6,8 +6,6 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=10GB
 #SBATCH --gres=gpu
-#SBATCH --output="./Output/output.out"
-#SBATCH --error="./Error/error.out"
 
 module load GCCcore/10.3.0 tesseract/5.4.1
 source /net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa/.venv/bin/activate

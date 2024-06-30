@@ -39,7 +39,7 @@ class Data():
             data = json.load(f)
         return data
     
-    def get_text_from_json(self, json_data: json) -> list[str]:
+    def get_text_from_json(self, json_data: json) -> str:
         extracted_text = []
 
         def recursive_search(node):
@@ -53,10 +53,13 @@ class Data():
                     recursive_search(item)
 
         recursive_search(json_data)
-        joined =  ''.join(extracted_text)
+        
+        if not extracted_text:
+            return ""
 
+        joined = ''.join(extracted_text)
         return joined
-
+    
     def load_pdf_as_image(self):
         test_pdf_path = "lemkin-pdf/2014/WDU20140000596/O/D20140596.pdf"
 
@@ -111,11 +114,6 @@ class Data():
         return ''.join(list).lower()
     
     def clean_text_from_json(self, string: str) -> str:
-        return ''.join(string.split()).lower()
-    
-    def find_max_lcs(self, json_iterator: iter, ) -> None:
-        max_lcs = 0
-        max_file = None
-
-        for file in json_iterator:
-            print(file)
+        string = ''.join(string.split()).lower()
+        string = string.replace('\n', '').replace('\r', '').replace(' ', '')
+        return string

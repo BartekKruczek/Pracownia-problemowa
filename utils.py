@@ -1,9 +1,6 @@
 import os
 import pypdfium2 as pdfium
 import os
-import json
-
-from data import Data
 
 class Utils():
     def __init__(self, json_path: str) -> None:
@@ -31,20 +28,23 @@ class Utils():
         n = len(b)
 
         for _ in a:
-            m = len(a)
-            # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
-            L = [[None] * (n + 1) for i in range(m + 1)]
+            if len(_) != 0:
+                m = len(a)
+                # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
+                L = [[None] * (n + 1) for i in range(m + 1)]
 
-            # budowanie tablicy L[m+1][n+1] w sposób bottom-up
-            for i in range(m + 1):
-                for j in range(n + 1):
-                    if i == 0 or j == 0:
-                        L[i][j] = 0
-                    elif a[i - 1] == b[j - 1]:
-                        L[i][j] = L[i - 1][j - 1] + 1
-                    else:
-                        L[i][j] = max(L[i - 1][j], L[i][j - 1])
-            all_lcs.append(L[m][n])
+                # budowanie tablicy L[m+1][n+1] w sposób bottom-up
+                for i in range(m + 1):
+                    for j in range(n + 1):
+                        if i == 0 or j == 0:
+                            L[i][j] = 0
+                        elif a[i - 1] == b[j - 1]:
+                            L[i][j] = L[i - 1][j - 1] + 1
+                        else:
+                            L[i][j] = max(L[i - 1][j], L[i][j - 1])
+                all_lcs.append(L[m][n])
+            else:
+                continue
 
         return max(all_lcs)
 
@@ -124,6 +124,21 @@ class Utils():
                             my_list.append(os.path.join(root, dir, file))
 
         return my_list
+    
+    def find_max_lcs(self, json_iterator_paths: iter, pdf_text: str) -> None:
+        max_lcs: dict = {}
+
+        for file_path in json_iterator_paths:
+            # file_path -> str
+            max_lcs[f"{file_path}"] = self.longest_common_subsequence_dynamic(file_path, pdf_text)
+
+        # max value
+        max_value = max(max_lcs.values())
+
+        # iterate through dict and find max value
+        for key, value in max_lcs.items():
+            if value == max_value:
+                print(f"{key} -> {value}")
         
 
     def delete_unwanted_dir(self, dir: str) -> None:

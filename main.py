@@ -21,22 +21,21 @@ def main():
     # clean up text and combine it to one string, combined text is one string without spaces
     cleaned_text = data.clean_text(text)
     combined = data.combine_text_to_one_string(cleaned_text)
-    # print(f"Pdf text \n{combined}")
+    print(f"Pdf text \n{combined}")
 
     # yield json files
     # print(*utils.yield_json_files())
 
     # read json data
-    json_data = data.read_json_data('lemkin-json-from-html/2014/2014_12.json')
+    json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
     json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-    # print(f"Json text \n{json_text}")
+    print(f"Json text \n{json_text}")
 
     # perform LCS, only one pdf file and one json file
     # print(utils.longest_common_subsequence_dynamic(utils.list_of_json_paths(), combined))
 
     # perform LCS, only one pdf file (2014) and all 2014' json files
-    data.find_max_lcs(json_iterator = utils.yield_json_files())
-
+    print(utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), pdf_text = combined))
 
 if __name__ == '__main__':
     main()
