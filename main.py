@@ -27,12 +27,15 @@ def main():
     # print(*utils.yield_json_files())
 
     # read json data
-    json_data = data.read_json_data('lemkin-json-from-html/1918/1918_2.json')
+    json_data = data.read_json_data('lemkin-json-from-html/2014/2014_12.json')
     json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
     # print(f"Json text \n{json_text}")
 
     # perform LCS, only one pdf file and one json file
-    print(utils.longest_common_subsequence_dynamic(json_text, combined))
+    # print(utils.longest_common_subsequence_dynamic(utils.list_of_json_paths(), combined))
+
+    # perform LCS, only one pdf file (2014) and all 2014' json files
+    data.find_max_lcs(json_iterator = utils.yield_json_files())
 
 
 if __name__ == '__main__':

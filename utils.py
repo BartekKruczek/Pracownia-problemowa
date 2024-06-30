@@ -20,29 +20,33 @@ class Utils():
         if len(a) == 0 or len(b) == 0:
             return 0
         if a[-1] == b[-1]:
-            return 1 + self.longest_common_subsequence(a[:-1], b[:-1])
+            return 1 + self.longest_common_subsequence_r(a[:-1], b[:-1])
         else:
-            return max(self.longest_common_subsequence(a, b[:-1]), self.longest_common_subsequence(a[:-1], b))
+            return max(self.longest_common_subsequence_r(a, b[:-1]), self.longest_common_subsequence_r(a[:-1], b))
         
     # dynamic
-    def longest_common_subsequence_dynamic(self, a, b):
-        m = len(a)
+    def longest_common_subsequence_dynamic(self, a: list, b: str) -> int:
+        all_lcs = []
+
         n = len(b)
 
-        # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
-        L = [[None] * (n + 1) for i in range(m + 1)]
+        for _ in a:
+            m = len(a)
+            # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
+            L = [[None] * (n + 1) for i in range(m + 1)]
 
-        # budowanie tablicy L[m+1][n+1] w sposób bottom-up
-        for i in range(m + 1):
-            for j in range(n + 1):
-                if i == 0 or j == 0:
-                    L[i][j] = 0
-                elif a[i - 1] == b[j - 1]:
-                    L[i][j] = L[i - 1][j - 1] + 1
-                else:
-                    L[i][j] = max(L[i - 1][j], L[i][j - 1])
+            # budowanie tablicy L[m+1][n+1] w sposób bottom-up
+            for i in range(m + 1):
+                for j in range(n + 1):
+                    if i == 0 or j == 0:
+                        L[i][j] = 0
+                    elif a[i - 1] == b[j - 1]:
+                        L[i][j] = L[i - 1][j - 1] + 1
+                    else:
+                        L[i][j] = max(L[i - 1][j], L[i][j - 1])
+            all_lcs.append(L[m][n])
 
-        return L[m][n]
+        return max(all_lcs)
 
         
     def json_folder_iterator(self):
@@ -103,9 +107,23 @@ class Utils():
         """
         for root, dirs, files in os.walk(self.json_path):
             for dir in dirs:
-                for file in os.listdir(os.path.join(root, dir)):
-                    if file.endswith('.json'):
-                        yield os.path.join(root, dir, file)
+                # only 2014, for PP purpouse
+                if dir == "2014":
+                    for file in os.listdir(os.path.join(root, dir)):
+                        if file.endswith('.json'):
+                            yield os.path.join(root, dir, file)
+
+    def list_of_json_paths(self) -> list[str]:
+        my_list = []
+
+        for root, dirs, files in os.walk(self.json_path):
+            for dir in dirs:
+                if dir == "2014":
+                    for file in os.listdir(os.path.join(root, dir)):
+                        if file.endswith('.json'):
+                            my_list.append(os.path.join(root, dir, file))
+
+        return my_list
         
 
     def delete_unwanted_dir(self, dir: str) -> None:

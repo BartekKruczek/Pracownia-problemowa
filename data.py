@@ -113,14 +113,9 @@ class Data():
     def clean_text_from_json(self, string: str) -> str:
         return ''.join(string.split()).lower()
     
-    def find_max_lcs(self, json_iterator, text_from_png, utils):
+    def find_max_lcs(self, json_iterator: iter, ) -> None:
         max_lcs = 0
         max_file = None
-        for json_file in json_iterator:
-            json_data = self.read_json_data(json_file)
-            json_text = json.dumps(json_data)
-            current_lcs = utils.longest_common_subsequence(text_from_png, json_text)
-            if current_lcs > max_lcs:
-                max_lcs = current_lcs
-                max_file = json_file
-        return max_file, max_lcs
+
+        for file in json_iterator:
+            print(file)
