@@ -149,3 +149,15 @@ class Utils():
             for di in dirs:
                 if di.endswith('*_png'):
                     os.rmdir(dir)
+
+    def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
+        print(f"Starting debugging...")
+
+        for elem in iterator:
+            json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(elem)))
+
+            if len(json_text) != 0:
+                print(f"{elem}")
+                print(f"Json text first 100 characters: {json_text[:50]} \n")
+
+        print(f"Debugging ended!")
