@@ -3,8 +3,9 @@ import pypdfium2 as pdfium
 import os
 
 class Utils():
-    def __init__(self, json_path: str) -> None:
+    def __init__(self, json_path: str, pdf_path: str) -> None:
         self.json_path = json_path
+        self.pdf_path = pdf_path
 
     def __repr__(self) -> str:
         return "Klasa do obsługi różnych narzędzi"
@@ -25,10 +26,12 @@ class Utils():
     def longest_common_subsequence_dynamic(self, a: list, b: str) -> int:
         all_lcs = []
 
+        b = b[:100]
         n = len(b)
 
         for _ in a:
             if len(_) != 0:
+                a = a[:100]
                 m = len(a)
                 # deklaracja tablicy L[m+1][n+1] wypełnionej zerami
                 L = [[None] * (n + 1) for i in range(m + 1)]
@@ -48,7 +51,6 @@ class Utils():
 
         return max(all_lcs)
 
-        
     def json_folder_iterator(self):
         """
         Iterates over a directory with .json files
@@ -113,6 +115,26 @@ class Utils():
                         if file.endswith('.json'):
                             yield os.path.join(root, dir, file)
 
+    def png_paths_creator(self) -> list[str]:
+        """
+        Creates list of png_0 paths
+        """
+        pngs_0_list: list = []
+
+        for root, dirs, files in os.walk(self.pdf_path):
+            for dir in dirs:
+                # only 2014, for PP purpose
+                if dir == "2014":
+                    for root, dirs, files in os.walk(os.path.join(root, dir)):
+                        for file in files:
+                            if file.endswith('_0.png'):
+                                full_path = os.path.join(root, file)
+                                pngs_0_list.append(full_path)
+                                print(f"{full_path}")
+
+        return pngs_0_list
+
+
     def list_of_json_paths(self) -> list[str]:
         my_list = []
 
@@ -125,9 +147,9 @@ class Utils():
 
         return my_list
     
-    def find_max_lcs(self, json_iterator_paths: iter, pdf_text: str) -> None:
+    def find_max_lcs(self, json_iterator_paths: iter, pdf_text: str, my_data: classmethod) -> None:
         max_lcs: dict = {}
-
+        
         for file_path in json_iterator_paths:
             # file_path -> str
             max_lcs[f"{file_path}"] = self.longest_common_subsequence_dynamic(file_path, pdf_text)
@@ -137,10 +159,13 @@ class Utils():
 
         # iterate through dict and find max value
         for key, value in max_lcs.items():
+            json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
             if value == max_value:
-                print(f"{key} -> {value}")
+                if len(json_text) != 0:
+                    print(f"{key} -> {value}")
+                    print(f"PDF text: {pdf_text[:100]}")
+                    print(f"JSON text: {json_text[:100]} \n")
         
-
     def delete_unwanted_dir(self, dir: str) -> None:
         """
         Deletes unwanted directory
@@ -158,6 +183,6 @@ class Utils():
 
             if len(json_text) != 0:
                 print(f"{elem}")
-                print(f"Json text first 100 characters: {json_text[:50]} \n")
+                print(f"Json text first 100 characters: {json_text[:100]} \n")
 
         print(f"Debugging ended!")
