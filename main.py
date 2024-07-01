@@ -38,10 +38,10 @@ def main():
     # utils.json_text_debugger(iterator = utils.yield_json_files(), my_data = data)
 
     # list of all png_0 files
-    utils.png_paths_creator()
+    pngs_list = utils.png_paths_creator()
 
     # perform LCS, only one pdf file (2014) and all 2014' json files
-    # print(utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), pdf_text = combined, my_data = data))
+    print(utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), png_list = pngs_list, my_data = data))
 
 if __name__ == '__main__':
     main()
