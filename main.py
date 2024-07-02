@@ -1,7 +1,11 @@
+import time
+
 from data import Data
 from utils import Utils
 
 def main():
+    start_time = time.time()
+
     data = Data(json_path='lemkin-json-from-html', pdf_path=  'lemkin-pdf')
     utils = Utils(json_path='lemkin-json-from-html', pdf_path = 'lemkin-pdf')
 
@@ -39,9 +43,18 @@ def main():
 
     # list of all png_0 files
     pngs_list = utils.png_paths_creator()
+    # print(f"Length of png_0_list is {len(pngs_list)}")
+    # print(type(pngs_list))
+
+    # png_list_debugger
+    # utils.pngs_list_debugger(pngs_list, data)
 
     # perform LCS, only one pdf file (2014) and all 2014' json files
     print(utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), png_list = pngs_list, my_data = data))
+
+    end_time = time.time()
+    elapsed_time = (end_time - start_time) / 60
+    print(f"Czas wykonania: {elapsed_time:.2f} minut")
 
 if __name__ == '__main__':
     main()

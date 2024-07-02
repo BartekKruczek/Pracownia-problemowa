@@ -146,35 +146,28 @@ class Utils():
         return my_list
     
     def find_max_lcs(self, json_iterator_paths: iter, png_list: list, my_data: classmethod) -> None:
+        """
+        max_lcs = {key: json_file_path, value: [png_path, max_lcs_value]}
+        """
         max_lcs: dict = {}
-        
-        for png_path in png_list:
+
+        for png_path in png_list[:2]:
             text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(png_path)))
             for file_path in json_iterator_paths:
                 # file_path -> str
-                max_lcs[f"{file_path}"] = self.longest_common_subsequence_dynamic(file_path, text)
+                max_lcs[f"{file_path}"] = [str(png_path), int(self.longest_common_subsequence_dynamic(file_path, text))]
 
-        # max value
-        max_value = max(max_lcs.values())
+            # Find the max value in max_lcs dictionary for the current png_path
+            max_value = max(max_lcs.values(), key=lambda x: x[1])
 
-        # iterate through dict and find max value
-        for key, value in max_lcs.items():
-            json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
-            text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(png_path)))
-            if value == max_value:
-                if len(json_text) != 0:
-                    print(f"{key} -> {value}")
-                    print(f"PDF text: {text[:100]}")
-                    print(f"JSON text: {json_text[:100]} \n")
-        
-    def delete_unwanted_dir(self, dir: str) -> None:
-        """
-        Deletes unwanted directory
-        """
-        for root, dirs, files in os.walk(dir):
-            for di in dirs:
-                if di.endswith('*_png'):
-                    os.rmdir(dir)
+            # Iterate through dict and find the key(s) with the max value
+            for key, value in max_lcs.items():
+                if value == max_value:
+                    json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
+                    if len(json_text) != 0:
+                        print(f"{key} -> {value}")
+                        print(f"PDF text: {text[:100]}")
+                        print(f"JSON text: {json_text[:100]} \n")
 
     def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
         print(f"Starting debugging...")
@@ -187,3 +180,18 @@ class Utils():
                 print(f"Json text first 100 characters: {json_text[:100]} \n")
 
         print(f"Debugging ended!")
+
+    def pngs_list_debugger(self, my_list: list[str], my_data: classmethod) -> None:
+        max_lcs = {}
+
+        for elem in my_list[:1]:
+            text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(elem)))
+            print(f"{elem} text: {text[:100]} \n")
+
+            for file_path in elem:
+                # file_path -> str
+                max_lcs[f"{file_path}"] = self.longest_common_subsequence_dynamic(file_path, text)
+
+            # max value
+            max_value = max(max_lcs.values())
+            print(f"Max lcs value {max_value}")
