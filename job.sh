@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=Png_counter
-#SBATCH --time=00:30:00
+#SBATCH --time=00:05:00
 #SBATCH --account=plgexaile2-gpu-a100
 #SBATCH --partition=plgrid-gpu-a100
 #SBATCH --cpus-per-task=4

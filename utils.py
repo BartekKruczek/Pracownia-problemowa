@@ -155,19 +155,26 @@ class Utils():
             text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(png_path)))
             for file_path in json_iterator_paths:
                 # file_path -> str
-                max_lcs[f"{file_path}"] = [str(png_path), int(self.longest_common_subsequence_dynamic(file_path, text))]
+                lcs_value = self.longest_common_subsequence_dynamic(file_path, text)
+                if lcs_value is not None:  # Ensure the LCS value is valid
+                    max_lcs[f"{file_path}"] = [str(png_path), int(lcs_value)]
 
-            # Find the max value in max_lcs dictionary for the current png_path
-            max_value = max(max_lcs.values(), key=lambda x: x[1])
+            if max_lcs:  # Check if max_lcs is not empty
+                # Find the max value in max_lcs dictionary for the current png_path
+                max_value = max(max_lcs.values(), key=lambda x: x[1])
 
-            # Iterate through dict and find the key(s) with the max value
-            for key, value in max_lcs.items():
-                if value == max_value:
-                    json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
-                    if len(json_text) != 0:
-                        print(f"{key} -> {value}")
-                        print(f"PDF text: {text[:100]}")
-                        print(f"JSON text: {json_text[:100]} \n")
+                # Iterate through dict and find the key(s) with the max value
+                for key, value in max_lcs.items():
+                    if value == max_value:
+                        json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
+                        if len(json_text) != 0:
+                            print(f"{key} -> {value}")
+                            print(f"PDF text: {text[:100]}")
+                            print(f"JSON text: {json_text[:100]} \n")
+            else:
+                print(f"No LCS values found for {png_path}")
+
+        print(f"{max_lcs}")
 
     def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
         print(f"Starting debugging...")
