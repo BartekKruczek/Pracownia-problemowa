@@ -88,17 +88,17 @@ class Data():
                     for dir2 in dirs2:
                         yield os.path.join(root2, dir2)
 
-    def yield_pdf_files(self):
+    def yield_pdf_files(self, year):
         """
         Yields pdf files, string format path to file
         """
-        for root, dirs, files in os.walk(self.pdf_path):
+        pdf_path = os.path.join(self.pdf_path, str(year))
+        for root, dirs, files in os.walk(pdf_path):
             for dir in dirs:
-                if dir == "2014":
-                    for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
-                        for file in files2:
-                            if file.endswith('.pdf'):
-                                yield os.path.join(root2, file)
+                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                    for file in files2:
+                        if file.endswith('.pdf'):
+                            yield os.path.join(root2, file)
 
     def get_text_from_png(self, image_path: str) -> str:
         # pytesseract.pytesseract.tesseract_cmd = "/net/people/plgrid/plgkruczek/.local/lib/python3.9/site-packages/tesseract"
@@ -108,12 +108,14 @@ class Data():
     
     def clean_text(self, list: list) -> list[str]:
         # basicly iterate over the elements from list and remove blank spaces
-        return [elem for elem in list if elem.strip()]
+        # return [elem for elem in list if elem.strip()]
+        return [elem for elem in list]
     
     def combine_text_to_one_string(self, list: list) -> str:
-        return ''.join(list).lower()
+        # return ''.join(list).lower()
+        return ' '.join(list)
     
     def clean_text_from_json(self, string: str) -> str:
-        string = ''.join(string.split()).lower()
-        string = string.replace('\n', '').replace('\r', '').replace(' ', '')
+        # string = ''.join(string.split()).lower()
+        # string = string.replace('\n', '').replace('\r', '').replace(' ', '')
         return string

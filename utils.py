@@ -1,11 +1,12 @@
 import os
 import pypdfium2 as pdfium
-import os
+import pandas as pd
+import pylcs
 
 class Utils():
     def __init__(self, json_path: str, pdf_path: str) -> None:
-        self.json_path = json_path
-        self.pdf_path = pdf_path
+        self.base_json_path = json_path
+        self.base_pdf_path = pdf_path
 
     def __repr__(self) -> str:
         return "Klasa do obsługi różnych narzędzi"
@@ -61,6 +62,16 @@ class Utils():
                     if file.endswith('.json'):
                         yield file
 
+    def lcs_pylcs(self, a: list, b: str) -> list[int]:
+        all_lcs: list = []
+
+        for _ in a:
+            if len(_) != 0:
+                all_lcs.append(int(pylcs.lcs_sequence_length(a, b)))
+
+        return max(all_lcs)
+
+
     def create_pdf_folder(dir: str) -> None:
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -76,61 +87,39 @@ class Utils():
         
         yield new_dir
 
-    def convert_pdf_to_png(self, iterator) -> None:
-        """
-        Converts pdf file to png and saves it in specified directory
-        """
-        for elem in iterator:
-            new_elem = elem.split('/')
-            new_elem = new_elem[0] + "/" + new_elem[1] + "/" + new_elem[2] + "/" + new_elem[3] + "/" + '_png'
-            
-            if not os.path.exists(new_elem):
-                os.makedirs(new_elem)
-
-            # convert pdf to image
-            pdf = pdfium.PdfDocument(elem)
+    def convert_pdf_to_png(self, pdf_path):
+        try:
+            pdf = pdfium.PdfDocument(pdf_path)
             n_pages = len(pdf)
 
-            # save pages as separate images into new_elem directory
+            folder_path = pdf_path.rsplit('.', 1)[0] + '_png'
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+
             for page_number in range(n_pages):
                 page = pdf.get_page(page_number)
-                pil_image = page.render(
-                    scale=5,
-                    rotation=0,
-                )
-                new_image = pil_image.to_pil()
-                new_image.save(f"{new_elem}/page_{page_number}.png")
+                pil_image = page.render(scale=5, rotation=0).to_pil()
+                pil_image.save(f"{folder_path}/page_{page_number}.png")
+        except pdfium.PdfiumError as e:
+            print(f"Failed to load PDF document {pdf_path}: {e}")
+        except Exception as e:
+            print(f"An error occurred while converting {pdf_path} to PNG: {e}")
 
-            print("Converted {} to png".format(elem))
 
-    def yield_json_files(self):
-        """
-        Yields json files
-        """
-        for root, dirs, files in os.walk(self.json_path):
-            for dir in dirs:
-                # only 2014, for PP purpouse
-                if dir == "2014":
-                    for file in os.listdir(os.path.join(root, dir)):
-                        if file.endswith('.json'):
-                            yield os.path.join(root, dir, file)
+    def yield_json_files(self, year):
+            json_path = os.path.join(self.base_json_path, str(year))
+            for root, _, files in os.walk(json_path):
+                for file in files:
+                    if file.endswith('.json'):
+                        yield os.path.join(root, file)
 
-    def png_paths_creator(self) -> list[str]:
-        """
-        Creates list of png_0 paths
-        """
-        pngs_0_list: list = []
-
-        for root, dirs, files in os.walk(self.pdf_path):
-            for dir in dirs:
-                # only 2014, for PP purpose
-                if dir == "2014":
-                    for root, dirs, files in os.walk(os.path.join(root, dir)):
-                        for file in files:
-                            if file.endswith('_0.png'):
-                                full_path = os.path.join(root, file)
-                                pngs_0_list.append(full_path)
-
+    def png_paths_creator(self, year) -> list[str]:
+        pdf_path = os.path.join(self.base_pdf_path, str(year))
+        pngs_0_list = []
+        for root, _, files in os.walk(pdf_path):
+            for file in files:
+                if file.endswith('_0.png'):
+                    pngs_0_list.append(os.path.join(root, file))
         return pngs_0_list
 
     def list_of_json_paths(self) -> list[str]:
@@ -145,48 +134,104 @@ class Utils():
 
         return my_list
     
-    def find_max_lcs(self, json_iterator_paths: iter, png_list: list, my_data: classmethod) -> None:
-        """
-        max_lcs = {key: json_file_path, value: [png_path, max_lcs_value]}
-        """
-        max_lcs: dict = {}
+    # def find_max_lcs(self, json_iterator_paths: iter, png_list: list, my_data: classmethod) -> None:
+    #     main_dict: dict = {}
+    #     # number_of_iter = int(len(png_list))
+    #     number_of_iter = int(5)
 
-        for png_path in png_list[:2]:
-            text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(png_path)))
-            for file_path in json_iterator_paths:
-                # file_path -> str
-                lcs_value = self.longest_common_subsequence_dynamic(file_path, text)
-                if lcs_value is not None:  # Ensure the LCS value is valid
-                    max_lcs[f"{file_path}"] = [str(png_path), int(lcs_value)]
+    #     # Convert iterator to list to allow multiple iterations
+    #     json_paths_list = list(json_iterator_paths)
 
-            if max_lcs:  # Check if max_lcs is not empty
-                # Find the max value in max_lcs dictionary for the current png_path
-                max_value = max(max_lcs.values(), key=lambda x: x[1])
+    #     # Initialize the main dictionary with empty dictionaries for each png_path
+    #     for png_path in png_list[:number_of_iter]:
+    #         main_dict[png_path] = {}
 
-                # Iterate through dict and find the key(s) with the max value
-                for key, value in max_lcs.items():
+    #     # Populate the main dictionary with LCS values
+    #     for png_path in png_list[:number_of_iter]:
+    #         text = my_data.combine_text_to_one_string(my_data.clean_text(my_data.get_text_from_png(png_path)))
+    #         print(f"Processing PNG: {png_path}")
+    #         for file_path in json_paths_list:
+    #             # lcs_value = self.longest_common_subsequence_dynamic(file_path, text)
+    #             lcs_value = self.lcs_pylcs(file_path, text)
+    #             if lcs_value is not None:  # Ensure the LCS value is valid
+    #                 main_dict[png_path][file_path] = int(lcs_value)
+    #                 print(f"Added LCS value {lcs_value} for JSON: {file_path} with PNG: {png_path}")
+    #             else:
+    #                 print(f"No LCS value found for JSON: {file_path} with PNG: {png_path}")
+
+    #     # Convert the main_dict to a DataFrame and save it to an Excel file
+    #     rows = []
+    #     for png_path, lcs_dict in main_dict.items():
+    #         for json_path, lcs_value in lcs_dict.items():
+    #             rows.append([png_path, json_path, lcs_value])
+
+    #     df = pd.DataFrame(rows, columns=['PNG Path', 'JSON Path', 'LCS Value'])
+    #     df.to_excel('lcs_results.xlsx', index=False)
+    #     print("Results saved to lcs_results.xlsx")
+
+    #     # Iterate through the main dictionary and find the max LCS for each png_path
+    #     for png_path, lcs_dict in main_dict.items():
+    #         if lcs_dict:  # Check if the lcs_dict is not empty
+    #             # Find the max value in the lcs_dict for the current png_path
+    #             max_value = max(lcs_dict.values())
+    #             # Find the json_path(s) with the max value
+    #             for json_path, value in lcs_dict.items():
+    #                 if value == max_value:
+    #                     json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(json_path)))
+    #                     if len(json_text) != 0:
+    #                         print(f"{json_path} -> [{png_path}, {value}]")
+    #                         print(f"PDF text: {text[:100]}")
+    #                         print(f"JSON text: {json_text[:100]} \n")
+    #         else:
+    #             print(f"No LCS values found for {png_path}")
+
+    # def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
+    #     print(f"Starting debugging...")
+
+    #     for elem in iterator:
+    #         json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(elem)))
+
+    #         if len(json_text) != 0:
+    #             print(f"{elem}")
+    #             print(f"Json text first 100 characters: {json_text[:100]} \n")
+
+    #     print(f"Debugging ended!")
+
+    def find_max_lcs(self, json_iterator_paths, png_list, data_handler, year):
+        main_dict = {}
+
+        json_paths_list = list(json_iterator_paths)
+
+        for png_path in png_list:
+            main_dict[png_path] = {}
+
+        for png_path in png_list:
+            text = data_handler.get_text_from_png(png_path)
+            for file_path in json_paths_list:
+                json_data = data_handler.read_json_data(file_path)
+                json_text = data_handler.get_text_from_json(json_data)
+                lcs_value = self.longest_common_subsequence_dynamic(json_text, text)
+                if lcs_value:
+                    main_dict[png_path][file_path] = lcs_value
+
+        rows = []
+        for png_path, lcs_dict in main_dict.items():
+            for json_path, lcs_value in lcs_dict.items():
+                rows.append([png_path, json_path, lcs_value])
+
+        df = pd.DataFrame(rows, columns=['PNG Path', 'JSON Path', 'LCS Value'])
+        df.to_csv(f'lcs_results_{year}.csv', index=False)
+
+        for png_path, lcs_dict in main_dict.items():
+            if lcs_dict:
+                max_value = max(lcs_dict.values())
+                for json_path, value in lcs_dict.items():
                     if value == max_value:
-                        json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(key)))
-                        if len(json_text) != 0:
-                            print(f"{key} -> {value}")
-                            print(f"PDF text: {text[:100]}")
-                            print(f"JSON text: {json_text[:100]} \n")
-            else:
-                print(f"No LCS values found for {png_path}")
-
-        print(f"{max_lcs}")
-
-    def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
-        print(f"Starting debugging...")
-
-        for elem in iterator:
-            json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(elem)))
-
-            if len(json_text) != 0:
-                print(f"{elem}")
-                print(f"Json text first 100 characters: {json_text[:100]} \n")
-
-        print(f"Debugging ended!")
+                        json_data = data_handler.read_json_data(json_path)
+                        json_text = data_handler.get_text_from_json(json_data)
+                        print(f"{json_path} -> [{png_path}, {value}]")
+                        print(f"PDF text: {text[:100]}")
+                        print(f"JSON text: {json_text[:100]} \n")
 
     def pngs_list_debugger(self, my_list: list[str], my_data: classmethod) -> None:
         max_lcs = {}

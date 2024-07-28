@@ -18,6 +18,8 @@ def main():
     if once_converted:
         print(utils.convert_pdf_to_png(data.yield_pdf_files()))
 
+    years = [2014, 2015, 2016]
+
     # extract text from png
     image_path = './lemkin-pdf/2014/WDU20140001594/O/_png/page_0.png'
     text = data.get_text_from_png(image_path)
@@ -41,16 +43,19 @@ def main():
     # json text debugger
     # utils.json_text_debugger(iterator = utils.yield_json_files(), my_data = data)
 
-    # list of all png_0 files
-    pngs_list = utils.png_paths_creator()
-    # print(f"Length of png_0_list is {len(pngs_list)}")
-    # print(type(pngs_list))
-
     # png_list_debugger
     # utils.pngs_list_debugger(pngs_list, data)
 
-    # perform LCS, only one pdf file (2014) and all 2014' json files
-    print(utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), png_list = pngs_list, my_data = data))
+    for year in years:
+        for pdf_path in data.yield_pdf_files(year):
+            utils.convert_pdf_to_png(pdf_path)
+
+        # list of all png_0 files
+        pngs_list = utils.png_paths_creator(year)
+        # print(f"Length of png_0_list is {len(pngs_list)}")
+        # print(type(pngs_list))
+
+        utils.find_max_lcs(json_iterator_paths = utils.yield_json_files(), png_list = pngs_list, my_data = data)
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
