@@ -1,4 +1,5 @@
 import os
+import shutil
 import json
 import pdf2image
 import pytesseract
@@ -123,3 +124,16 @@ class Data():
         # string = ''.join(string.split()).lower()
         # string = string.replace('\n', '').replace('\r', '').replace(' ', '')
         return string
+    
+    def delete_unwanted_folders(self):
+        for root, dirs, files in os.walk(self.pdf_path):
+            for dir in dirs:
+                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                    for dir2 in dirs2:
+                        for root3, dirs3, files3 in os.walk(os.path.join(root2, dir2)):
+                            for dir3 in dirs3:
+                                if dir3.endswith('_png') and len(dir3) <5:
+                                    path = os.path.join(root3, dir3)
+                                    # print(f"{path}")
+                                    shutil.rmtree(path)
+                        
