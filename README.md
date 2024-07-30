@@ -1,6 +1,10 @@
 # Pracownia-problemowa
 
-Struktura folderów
+## To DO:
+- łączyć w jedną całość wiele stron, nie tylko tekst z pierwszej z nich
+- lepszy pre processing tekstu
+
+## Struktura folderów
 
 - lemkin-pdf
   |
