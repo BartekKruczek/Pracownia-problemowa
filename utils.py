@@ -56,6 +56,7 @@ class Utils():
         """
         Iterates over a directory with .json files
         """
+        print(f'Initializing {self.json_folder_iterator.__name__}')
         for root, dirs, files in os.walk(self.json_path):
             for dir in dirs:
                 for file in os.listdir(os.path.join(root, dir)):
@@ -63,6 +64,7 @@ class Utils():
                         yield file
 
     def lcs_pylcs(self, a: list, b: str) -> list[int]:
+        print(f'Initializing {self.lcs_pylcs.__name__}')
         all_lcs: list = []
 
         for _ in a:
@@ -72,11 +74,13 @@ class Utils():
         return max(all_lcs)
 
 
-    def create_pdf_folder(dir: str) -> None:
+    def create_pdf_folder(self, dir: str) -> None:
+        print(f'Initializing {self.create_pdf_folder.__name__}')
         if not os.path.exists(dir):
             os.makedirs(dir)
 
     def create_png_folder(self, generator):
+        print(f'Initializing {self.create_png_folder.__name__}')
         # stripping last element from path
         for elem in generator:
             dir_without_last = elem.split('/')[:-1]
@@ -88,6 +92,7 @@ class Utils():
         yield new_dir
 
     def convert_pdf_to_png(self, pdf_path):
+        print(f'Initializing {self.convert_pdf_to_png.__name__}')
         try:
             pdf = pdfium.PdfDocument(pdf_path)
             n_pages = len(pdf)
@@ -105,15 +110,16 @@ class Utils():
         except Exception as e:
             print(f"An error occurred while converting {pdf_path} to PNG: {e}")
 
-
     def yield_json_files(self, year):
-            json_path = os.path.join(self.base_json_path, str(year))
-            for root, _, files in os.walk(json_path):
-                for file in files:
-                    if file.endswith('.json'):
-                        yield os.path.join(root, file)
+        print(f'Initializing {self.yield_json_files.__name__}')
+        json_path = os.path.join(self.base_json_path, str(year))
+        for root, _, files in os.walk(json_path):
+            for file in files:
+                if file.endswith('.json'):
+                    yield os.path.join(root, file)
 
     def png_paths_creator(self, year) -> list[str]:
+        print(f'Initializing {self.png_paths_creator.__name__}')
         pdf_path = os.path.join(self.base_pdf_path, str(year))
         pngs_0_list = []
         for root, _, files in os.walk(pdf_path):
@@ -123,6 +129,7 @@ class Utils():
         return pngs_0_list
 
     def list_of_json_paths(self) -> list[str]:
+        print(f'Initializing {self.list_of_json_paths.__name__}')
         my_list = []
 
         for root, dirs, files in os.walk(self.json_path):
@@ -185,19 +192,20 @@ class Utils():
     #         else:
     #             print(f"No LCS values found for {png_path}")
 
-    # def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
-    #     print(f"Starting debugging...")
+    def json_text_debugger(self, iterator: iter, my_data: classmethod) -> None:
+        print(f"Starting debugging...")
 
-    #     for elem in iterator:
-    #         json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(elem)))
+        for elem in iterator:
+            json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(elem)))
 
-    #         if len(json_text) != 0:
-    #             print(f"{elem}")
-    #             print(f"Json text first 100 characters: {json_text[:100]} \n")
+            if len(json_text) != 0:
+                print(f"{elem}")
+                print(f"Json text first 100 characters: {json_text[:100]} \n")
 
-    #     print(f"Debugging ended!")
+        print(f"Debugging ended!")
 
     def find_max_lcs(self, json_iterator_paths, png_list, data_handler, year):
+        print(f'Initializing {self.find_max_lcs.__name__}')
         main_dict = {}
 
         json_paths_list = list(json_iterator_paths)
@@ -220,7 +228,7 @@ class Utils():
                 rows.append([png_path, json_path, lcs_value])
 
         df = pd.DataFrame(rows, columns=['PNG Path', 'JSON Path', 'LCS Value'])
-        df.to_csv(f'lcs_results_{year}.csv', index=False)
+        df.to_csv(f'lcs_results_{year}.xlsx', index=False)
 
         for png_path, lcs_dict in main_dict.items():
             if lcs_dict:

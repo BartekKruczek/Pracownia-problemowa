@@ -40,6 +40,7 @@ class Data():
         return data
     
     def get_text_from_json(self, json_data: json) -> str:
+        print(f'Initializing {self.get_text_from_json.__name__}')
         extracted_text = []
 
         def recursive_search(node):
@@ -61,6 +62,7 @@ class Data():
         return joined
     
     def load_pdf_as_image(self):
+        print(f'Initializing {self.load_pdf_as_image.__name__}')
         test_pdf_path = "lemkin-pdf/2014/WDU20140000596/O/D20140596.pdf"
 
         # convert pdf to image
@@ -79,6 +81,7 @@ class Data():
         pass
 
     def yield_pdf_folders(self):
+        print(f'Initializing {self.yield_pdf_folders.__name__}')
         """
         Converts pdf file to png, creates subfolder with pngs. Localization is the same as pdf file.
         """
@@ -89,6 +92,7 @@ class Data():
                         yield os.path.join(root2, dir2)
 
     def yield_pdf_files(self, year):
+        print(f'Initializing {self.yield_pdf_files.__name__}')
         """
         Yields pdf files, string format path to file
         """
