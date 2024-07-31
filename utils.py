@@ -257,3 +257,49 @@ class Utils():
             # max value
             max_value = max(max_lcs.values())
             print(f"Max lcs value {max_value}")
+
+    def find_max_lcs_folders(self, json_iterator_paths: iter, image_folders: list, my_data: classmethod, year: int) -> None:
+        print(f"Initializing {self.find_max_lcs_folders.__name__}")
+        main_dict: dict = {}
+        # number_of_iter = len(image_folders)
+        number_of_iter = 5
+
+        json_paths_list = list(json_iterator_paths)
+
+        for folder in image_folders[:number_of_iter]:
+            main_dict[folder] = {}
+
+        for folder in image_folders[:number_of_iter]:
+            text = my_data.get_text_from_images(folder)
+            print(f"Processing folder: {folder}")
+            for file_path in json_paths_list:
+                lcs_value = self.lcs_pylcs(file_path, text)
+                if lcs_value is not None:
+                    main_dict[folder][file_path] = int(lcs_value)
+                    print(f"Added LCS value {lcs_value} for JSON: {file_path} with folder: {folder}")
+                else:
+                    print(f"No LCS value found for JSON: {file_path} with folder: {folder}")
+
+        # Konwersja main_dict do DataFrame i zapis do pliku Excel
+        rows = []
+        for folder, lcs_dict in main_dict.items():
+            for json_path, lcs_value in lcs_dict.items():
+                rows.append([folder, json_path, lcs_value])
+
+        df = pd.DataFrame(rows, columns=['Image Folder', 'JSON Path', 'LCS Value'])
+        df.to_excel(f'lcs_results_{year}.xlsx', index=False)
+        print("Results saved to lcs_results.xlsx")
+
+        # Iteracja przez main_dict i znalezienie maksymalnego LCS dla każdego folderu
+        for folder, lcs_dict in main_dict.items():
+            if lcs_dict:
+                max_value = max(lcs_dict.values())
+                for json_path, value in lcs_dict.items():
+                    if value == max_value:
+                        json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(json_path)))
+                        if len(json_text) != 0:
+                            print(f"{json_path} -> [{folder}, {value}]")
+                            print(f"PDF text: {text[:100]}")
+                            print(f"JSON text: {json_text[:100]} \n")
+            else:
+                print(f"No LCS values found for {folder}")

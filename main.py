@@ -1,4 +1,5 @@
 import time
+import os
 
 from data import Data
 from utils import Utils
@@ -61,7 +62,20 @@ def main():
             # print(pngs_list)
             # print(len(pngs_list))
 
-            utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
+            image_folders = []
+            base_path = os.path.join(data.pdf_path, str(year))
+
+            for root, dirs, _ in os.walk(base_path):
+                for dir_name in dirs:
+                    for root2, dirs2, _ in os.walk(os.path.join(root, dir_name)):
+                        for dir2 in dirs2:
+                            if dir2.endswith('_png'):
+                                image_folders.append(os.path.join(root2, dir2))
+
+            # print(image_folders)
+
+            # utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
+            utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

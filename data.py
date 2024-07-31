@@ -157,4 +157,24 @@ class Data():
                                     path = os.path.join(root3, dir3)
                                     # print(f"{path}")
                                     shutil.rmtree(path)
+
+    def get_text_from_images(self, image_folder: str) -> str:
+        """
+        Ekstrakcja tekstu z wszystkich obrazów w podanym folderze.
+        """
+        print(f"Initializing {self.get_text_from_images.__name__}")
+        all_text = []
+        try:
+            for filename in sorted(os.listdir(image_folder)):
+                if filename.endswith('.png'):
+                    image_path = os.path.join(image_folder, filename)
+                    image = Image.open(image_path)
+                    text = pytesseract.image_to_string(image)
+                    all_text.append(text)
+
+            combined_text = ' '.join(all_text)
+            return combined_text
+        except Exception as e:
+            print(f"An error occurred while extracting text from images in {image_folder}: {e}")
+            return ""
                         

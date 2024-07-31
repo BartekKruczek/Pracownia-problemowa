@@ -1,7 +1,7 @@
 # Pracownia-problemowa
 
 ## To DO:
-- łączyć w jedną całość wiele stron, nie tylko tekst z pierwszej z nich
+- ~~łączyć w jedną całość wiele stron, nie tylko tekst z pierwszej z nich~~
 - lepszy pre processing tekstu
 
 ## Struktura folderów
