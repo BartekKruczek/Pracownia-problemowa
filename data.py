@@ -62,6 +62,27 @@ class Data():
         joined = ''.join(extracted_text)
         return joined
     
+    def get_text_from_pdf(self, pdf_path: str) -> str:
+        """
+        Ekstrahuje tekst z wszystkich stron dokumentu PDF.
+        """
+        try:
+            images = pdf2image.convert_from_path(pdf_path)
+            all_text = []
+
+            for image in images:
+                # Konwertowanie obrazu na tekst
+                text = pytesseract.image_to_string(image)
+                all_text.append(text)
+
+            # Łączenie wszystkich tekstów w jedną całość
+            combined_text = ' '.join(all_text)
+            return combined_text
+
+        except Exception as e:
+            print(f"An error occurred while extracting text from {pdf_path}: {e}")
+            return ""
+    
     def load_pdf_as_image(self):
         print(f'Initializing {self.load_pdf_as_image.__name__}')
         test_pdf_path = "lemkin-pdf/2014/WDU20140000596/O/D20140596.pdf"
@@ -113,16 +134,16 @@ class Data():
     
     def clean_text(self, list: list) -> list[str]:
         # basicly iterate over the elements from list and remove blank spaces
-        # return [elem for elem in list if elem.strip()]
-        return [elem for elem in list]
+        return [elem for elem in list if elem.strip()]
+        # return [elem for elem in list]
     
     def combine_text_to_one_string(self, list: list) -> str:
-        # return ''.join(list).lower()
-        return ' '.join(list)
+        return ''.join(list).lower()
+        # return ' '.join(list)
     
     def clean_text_from_json(self, string: str) -> str:
-        # string = ''.join(string.split()).lower()
-        # string = string.replace('\n', '').replace('\r', '').replace(' ', '')
+        string = ''.join(string.split()).lower()
+        string = string.replace('\n', '').replace('\r', '').replace(' ', '')
         return string
     
     def delete_unwanted_folders(self):
