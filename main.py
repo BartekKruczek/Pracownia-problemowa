@@ -49,8 +49,12 @@ def main():
 
     # data.delete_unwanted_folders()
 
-    do_iterate = True
+    do_debug_png_folders = False
+    if do_debug_png_folders:
+        path = 'lemkin-pdf/2014/WDU20140000598/O/D20140598_png'
+        data.get_text_from_images(image_folder=path)
 
+    do_iterate = False
     if do_iterate:
         for year in years:
             # for pdf_path in data.yield_pdf_files(year):

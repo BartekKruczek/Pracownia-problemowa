@@ -277,6 +277,7 @@ class Utils():
                 if lcs_value is not None:
                     main_dict[folder][file_path] = int(lcs_value)
                     print(f"Added LCS value {lcs_value} for JSON: {file_path} with folder: {folder}")
+                    print(f"PDF text: {text[:100]}")
                 else:
                     print(f"No LCS value found for JSON: {file_path} with folder: {folder}")
 
@@ -287,7 +288,7 @@ class Utils():
                 rows.append([folder, json_path, lcs_value])
 
         df = pd.DataFrame(rows, columns=['Image Folder', 'JSON Path', 'LCS Value'])
-        df.to_excel(f'lcs_results_{year}.xlsx', index=False)
+        df.to_excel(f'lcs_results_{year}_combined.xlsx', index=False)
         print("Results saved to lcs_results.xlsx")
 
         # Iteracja przez main_dict i znalezienie maksymalnego LCS dla każdego folderu
@@ -299,7 +300,6 @@ class Utils():
                         json_text = my_data.clean_text_from_json(my_data.get_text_from_json(my_data.read_json_data(json_path)))
                         if len(json_text) != 0:
                             print(f"{json_path} -> [{folder}, {value}]")
-                            print(f"PDF text: {text[:100]}")
                             print(f"JSON text: {json_text[:100]} \n")
             else:
                 print(f"No LCS values found for {folder}")

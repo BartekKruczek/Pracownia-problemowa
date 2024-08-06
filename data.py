@@ -165,14 +165,21 @@ class Data():
         print(f"Initializing {self.get_text_from_images.__name__}")
         all_text = []
         try:
+            num_pages = 0
             for filename in sorted(os.listdir(image_folder)):
                 if filename.endswith('.png'):
                     image_path = os.path.join(image_folder, filename)
                     image = Image.open(image_path)
                     text = pytesseract.image_to_string(image)
                     all_text.append(text)
+                    print(f"Combined another page")
+                    num_pages += 1
 
-            combined_text = ' '.join(all_text)
+            combined_text = ''.join(all_text).lower()
+            print(f"Processed {num_pages} pages.")
+            combined_text = self.clean_text(combined_text)
+            combined_text = self.combine_text_to_one_string(combined_text)
+            print(combined_text)
             return combined_text
         except Exception as e:
             print(f"An error occurred while extracting text from images in {image_folder}: {e}")
