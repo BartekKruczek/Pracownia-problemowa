@@ -20,6 +20,7 @@ def main():
         print(utils.convert_pdf_to_png(data.yield_pdf_files()))
 
     years = [2014]
+    years_convert = [2015]
 
     # extract text from png
     image_path = './lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png'
@@ -54,18 +55,9 @@ def main():
         path = 'lemkin-pdf/2014/WDU20140000598/O/D20140598_png'
         data.get_text_from_images(image_folder=path)
 
-    do_iterate = False
-    if do_iterate:
+    do_folder_debug = False
+    if do_folder_debug:
         for year in years:
-            # for pdf_path in data.yield_pdf_files(year):
-            #     print(f"{pdf_path}")
-            #     utils.convert_pdf_to_png(pdf_path)
-
-            # list of all png_0 files
-            # pngs_list = utils.png_paths_creator(year)
-            # print(pngs_list)
-            # print(len(pngs_list))
-
             image_folders = []
             base_path = os.path.join(data.pdf_path, str(year))
 
@@ -76,7 +68,44 @@ def main():
                             if dir2.endswith('_png'):
                                 image_folders.append(os.path.join(root2, dir2))
 
-            # print(image_folders)
+        print(image_folders)
+
+    do_debug_combine = False
+    if do_debug_combine:
+        image_folders = []
+        for year in years:
+            base_path = os.path.join(data.pdf_path, str(year))
+            for root, dirs, _ in os.walk(base_path):
+                for dir_name in dirs:
+                    for root2, dirs2, _ in os.walk(os.path.join(root, dir_name)):
+                        for dir2 in dirs2:
+                            if dir2.endswith('_png'):
+                                image_folders.append(os.path.join(root2, dir2))
+
+        print(image_folders)
+
+        for elem in image_folders:
+            data.get_text_from_images(image_folder = elem)
+
+    do_convert_years = False
+    if do_convert_years:
+        for y in years_convert:
+            for pdf_path in data.yield_pdf_files(y):
+                print(f"{pdf_path}")
+                utils.convert_pdf_to_png(pdf_path)
+
+    do_iterate = True
+    if do_iterate:
+        for year in years:
+            image_folders = []
+            base_path = os.path.join(data.pdf_path, str(year))
+
+            for root, dirs, _ in os.walk(base_path):
+                for dir_name in dirs:
+                    for root2, dirs2, _ in os.walk(os.path.join(root, dir_name)):
+                        for dir2 in dirs2:
+                            if dir2.endswith('_png'):
+                                image_folders.append(os.path.join(root2, dir2))
 
             # utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)

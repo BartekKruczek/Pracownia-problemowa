@@ -269,15 +269,17 @@ class Utils():
         for folder in image_folders[:number_of_iter]:
             main_dict[folder] = {}
 
+
+        print(f"Main dictionary: {main_dict}")
         for folder in image_folders[:number_of_iter]:
             text = my_data.get_text_from_images(folder)
+            print(f"Extracted text: {text}")
             print(f"Processing folder: {folder}")
             for file_path in json_paths_list:
                 lcs_value = self.lcs_pylcs(file_path, text)
                 if lcs_value is not None:
                     main_dict[folder][file_path] = int(lcs_value)
                     print(f"Added LCS value {lcs_value} for JSON: {file_path} with folder: {folder}")
-                    print(f"PDF text: {text[:100]}")
                 else:
                     print(f"No LCS value found for JSON: {file_path} with folder: {folder}")
 

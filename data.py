@@ -163,6 +163,7 @@ class Data():
         Ekstrakcja tekstu z wszystkich obrazów w podanym folderze.
         """
         print(f"Initializing {self.get_text_from_images.__name__}")
+        print(f"Starting processing {image_folder}...")
         all_text = []
         try:
             num_pages = 0

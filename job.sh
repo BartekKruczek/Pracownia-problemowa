@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=Over_years
-#SBATCH --time=00:10:00
+#SBATCH --time=12:00:00
 #SBATCH --account=plgexaile2-gpu-a100
 #SBATCH --partition=plgrid-gpu-a100
 #SBATCH --cpus-per-task=4
