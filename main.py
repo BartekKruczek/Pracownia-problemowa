@@ -17,10 +17,9 @@ def main():
     once_converted = False
 
     if once_converted:
-        print(utils.convert_pdf_to_png(data.yield_pdf_files()))
+        print(utils.convert_pdf_to_png(data.yield_pdf_files(year = 2015)))
 
     years = [2014]
-    years_convert = [2015]
 
     # extract text from png
     image_path = './lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png'
@@ -37,7 +36,7 @@ def main():
     # read json data
     json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
     json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-    # print(f"Json text \n{json_text}")
+    # rint(f"Json text \n{json_text}")
 
     # perform LCS, only one pdf file and one json file
     # print(utils.longest_common_subsequence_dynamic(utils.list_of_json_paths(), combined))
@@ -48,12 +47,12 @@ def main():
     # png_list_debugger
     # utils.pngs_list_debugger(pngs_list, data)
 
-    # data.delete_unwanted_folders()
+    data.delete_unwanted_folders()
 
     do_debug_png_folders = False
     if do_debug_png_folders:
-        path = 'lemkin-pdf/2014/WDU20140000598/O/D20140598_png'
-        data.get_text_from_images(image_folder=path)
+        path = './lemkin-pdf/2015/WDU20150000004/O/D20150004_png/'
+        data.get_text_from_images(image_folder = path)
 
     do_folder_debug = False
     if do_folder_debug:
@@ -87,14 +86,7 @@ def main():
         for elem in image_folders:
             data.get_text_from_images(image_folder = elem)
 
-    do_convert_years = False
-    if do_convert_years:
-        for y in years_convert:
-            for pdf_path in data.yield_pdf_files(y):
-                print(f"{pdf_path}")
-                utils.convert_pdf_to_png(pdf_path)
-
-    do_iterate = True
+    do_iterate = False
     if do_iterate:
         for year in years:
             image_folders = []

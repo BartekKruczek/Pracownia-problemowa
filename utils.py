@@ -269,7 +269,6 @@ class Utils():
         for folder in image_folders[:number_of_iter]:
             main_dict[folder] = {}
 
-
         print(f"Main dictionary: {main_dict}")
         for folder in image_folders[:number_of_iter]:
             text = my_data.get_text_from_images(folder)

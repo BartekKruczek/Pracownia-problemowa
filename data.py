@@ -3,8 +3,10 @@ import shutil
 import json
 import pdf2image
 import pytesseract
+import re
 
 from PIL import Image
+from datetime import datetime
 
 class Data():
     def __init__(self, json_path = None, pdf_path = None):
@@ -138,7 +140,7 @@ class Data():
         # return [elem for elem in list]
     
     def combine_text_to_one_string(self, list: list) -> str:
-        return ''.join(list).lower()
+        return ' '.join(list).lower()
         # return ' '.join(list)
     
     def clean_text_from_json(self, string: str) -> str:
@@ -149,14 +151,15 @@ class Data():
     def delete_unwanted_folders(self):
         for root, dirs, files in os.walk(self.pdf_path):
             for dir in dirs:
-                for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
-                    for dir2 in dirs2:
-                        for root3, dirs3, files3 in os.walk(os.path.join(root2, dir2)):
-                            for dir3 in dirs3:
-                                if dir3.endswith('_png') and len(dir3) <5:
-                                    path = os.path.join(root3, dir3)
-                                    # print(f"{path}")
-                                    shutil.rmtree(path)
+                if dir == '2015':
+                    for root2, dirs2, files2 in os.walk(os.path.join(root, dir)):
+                        for dir2 in dirs2:
+                            for root3, dirs3, files3 in os.walk(os.path.join(root2, dir2)):
+                                for dir3 in dirs3:
+                                    if dir3.endswith('_png') and len(dir3) >5:
+                                        path = os.path.join(root3, dir3)
+                                        # print(f"{path}")
+                                        shutil.rmtree(path)
 
     def get_text_from_images(self, image_folder: str) -> str:
         """
@@ -176,7 +179,7 @@ class Data():
                     print(f"Combined another page")
                     num_pages += 1
 
-            combined_text = ''.join(all_text).lower()
+            combined_text = ' '.join(all_text).lower()
             print(f"Processed {num_pages} pages.")
             combined_text = self.clean_text(combined_text)
             combined_text = self.combine_text_to_one_string(combined_text)
@@ -184,5 +187,33 @@ class Data():
             return combined_text
         except Exception as e:
             print(f"An error occurred while extracting text from images in {image_folder}: {e}")
-            return ""
+            return "Text not extracted!"
+
+    def get_text_data(self, text: str):
+        miesiace = {
+            "stycznia": 1,
+            "lutego": 2,
+            "marca": 3,
+            "kwietnia": 4,
+            "maja": 5,
+            "czerwca": 6,
+            "lipca": 7,
+            "sierpnia": 8,
+            "września": 9,
+            "października": 10,
+            "listopada": 11,
+            "grudnia": 12
+        }
+
+        search_pattern = r'\b(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4})\s*r\.'
                         
+        match = re.search(search_pattern, text)
+        if match:
+            day = int(match.group(1))
+            month = miesiace[match.group(2)]
+            year = int(match.group(3))
+            try:
+                return datetime(year, month, day)
+            except ValueError:
+                return None
+        return None
