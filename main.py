@@ -49,7 +49,7 @@ def main():
 
     # data.delete_unwanted_folders()
 
-    do_debug_png_folders = True
+    do_debug_png_folders = False
     if do_debug_png_folders:
         path = './lemkin-pdf/2014/WDU20140000693/O/D20140693_png'
         text = data.get_text_from_images(image_folder = path)
@@ -74,7 +74,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = False
+    do_debug_combine = True
     if do_debug_combine:
         image_folders = []
         for year in years:
@@ -86,10 +86,19 @@ def main():
                             if dir2.endswith('_png'):
                                 image_folders.append(os.path.join(root2, dir2))
 
-        print(image_folders)
+        # print(image_folders)
 
-        for elem in image_folders:
-            data.get_text_from_images(image_folder = elem)
+        for elem in image_folders[:10]:
+            text = data.get_text_from_images(image_folder = elem, first_png_only = True)
+
+            # data
+            date = data.get_text_data(text)
+
+            if date is not None:
+                formated_date = date.strftime('%Y-%m-%d')
+                print(f'Formatted date: {formated_date}, file: {elem}')
+            else:
+                print("No date found in the text.")
 
     do_iterate = False
     if do_iterate:

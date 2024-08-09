@@ -161,38 +161,63 @@ class Data():
                                         # print(f"{path}")
                                         shutil.rmtree(path)
 
-    def get_text_from_images(self, image_folder: str) -> str:
+    def get_text_from_images(self, image_folder: str, first_png_only = bool) -> str:
         """
         Ekstrakcja tekstu z wszystkich obrazów w podanym folderze.
         """
         print(f"Initializing {self.get_text_from_images.__name__}")
         print(f"Starting processing {image_folder}...")
         all_text = []
-        try:
-            num_pages = 0
-            for filename in sorted(os.listdir(image_folder)):
-                if filename.endswith('.png'):
-                    image_path = os.path.join(image_folder, filename)
-                    image = Image.open(image_path)
+        if first_png_only:
+            try:
+                image_files = sorted(os.listdir(image_folder))
+                
+                image_files = [file for file in image_files if file.endswith('.png')]
+                
+                if image_files:
+                    first_image_path = os.path.join(image_folder, image_files[0])
+                    print(f"Processing first image: {first_image_path}")
+                    
+                    image = Image.open(first_image_path)
                     text = pytesseract.image_to_string(image)
-                    all_text.append(text)
-                    print(f"Combined another page")
-                    num_pages += 1
+                    cleaned_text = text.replace("\n", " ").replace("\r", " ")
+                    cleaned_text = cleaned_text = re.sub(r'\s+', ' ', text)
+                    cleaned_text = cleaned_text.strip()
+                    print(cleaned_text)
+                    return cleaned_text
+                else:
+                    print(f"No images found in folder: {image_folder}")
+                    return "No images found!"
 
-            combined_text = ''.join(all_text).lower()
-            print(f"Processed {num_pages} pages.")
-            # combined_text = self.clean_text(combined_text)
-            # combined_text = self.combine_text_to_one_string(combined_text)
+            except Exception as e:
+                print(f"An error occurred while extracting text from images in {image_folder}: {e}")
+                return "Text not extracted!"
+        else:
+            try:
+                num_pages = 0
+                for filename in sorted(os.listdir(image_folder)):
+                    if filename.endswith('.png'):
+                        image_path = os.path.join(image_folder, filename)
+                        image = Image.open(image_path)
+                        text = pytesseract.image_to_string(image)
+                        all_text.append(text)
+                        print(f"Combined another page")
+                        num_pages += 1
 
-            text = text.replace("\n", " ").replace("\r", " ")
-            text = re.sub(r'\s+', ' ', text)
-            text = text.strip()
+                combined_text = ''.join(all_text).lower()
+                print(f"Processed {num_pages} pages.")
+                # combined_text = self.clean_text(combined_text)
+                # combined_text = self.combine_text_to_one_string(combined_text)
 
-            print(text)
-            return text
-        except Exception as e:
-            print(f"An error occurred while extracting text from images in {image_folder}: {e}")
-            return "Text not extracted!"
+                text = text.replace("\n", " ").replace("\r", " ")
+                text = re.sub(r'\s+', ' ', text)
+                text = text.strip()
+
+                print(text)
+                return text
+            except Exception as e:
+                print(f"An error occurred while extracting text from images in {image_folder}: {e}")
+                return "Text not extracted!"
 
     def get_text_data(self, text: str):
         miesiace = {
