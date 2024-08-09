@@ -136,8 +136,8 @@ class Data():
     
     def clean_text(self, list: list) -> list[str]:
         # basicly iterate over the elements from list and remove blank spaces
-        return [elem for elem in list if elem.strip()]
-        # return [elem for elem in list]
+        # return [elem for elem in list if elem.strip()]
+        return [elem for elem in list]
     
     def combine_text_to_one_string(self, list: list) -> str:
         return ' '.join(list).lower()
@@ -179,12 +179,17 @@ class Data():
                     print(f"Combined another page")
                     num_pages += 1
 
-            combined_text = ' '.join(all_text).lower()
+            combined_text = ''.join(all_text).lower()
             print(f"Processed {num_pages} pages.")
-            combined_text = self.clean_text(combined_text)
-            combined_text = self.combine_text_to_one_string(combined_text)
-            print(combined_text)
-            return combined_text
+            # combined_text = self.clean_text(combined_text)
+            # combined_text = self.combine_text_to_one_string(combined_text)
+
+            text = text.replace("\n", " ").replace("\r", " ")
+            text = re.sub(r'\s+', ' ', text)
+            text = text.strip()
+
+            print(text)
+            return text
         except Exception as e:
             print(f"An error occurred while extracting text from images in {image_folder}: {e}")
             return "Text not extracted!"
