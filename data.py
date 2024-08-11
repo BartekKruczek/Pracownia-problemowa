@@ -229,21 +229,26 @@ class Data():
             "czerwca": 6,
             "lipca": 7,
             "sierpnia": 8,
+            "wrzesnia": 9,
             "września": 9,
+            "pazdziernika": 10,
             "października": 10,
             "listopada": 11,
             "grudnia": 12
         }
 
-        search_pattern = r'\b(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4})\s*r\.'
-                        
+        search_pattern = r'\b(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrzesnia|września|pazdziernika|października|listopada|grudnia)\s+(\d{4})\s*r?\.'
+        date_counter = 0
+      
         match = re.search(search_pattern, text)
         if match:
             day = int(match.group(1))
             month = miesiace[match.group(2)]
             year = int(match.group(3))
             try:
-                return datetime(year, month, day)
+                date_counter += 1
+                if date_counter == 1:
+                    return datetime(year, month, day)
             except ValueError:
                 return None
         return None

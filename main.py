@@ -1,5 +1,6 @@
 import time
 import os
+import pandas as pd
 
 from data import Data
 from utils import Utils
@@ -88,17 +89,24 @@ def main():
 
         # print(image_folders)
 
-        for elem in image_folders[:10]:
+        extracted_data = []
+        for elem in image_folders:
             text = data.get_text_from_images(image_folder = elem, first_png_only = True)
 
-            # data
+            # data dokumentu
             date = data.get_text_data(text)
 
             if date is not None:
-                formated_date = date.strftime('%Y-%m-%d')
-                print(f'Formatted date: {formated_date}, file: {elem}')
+                formatted_date = date.strftime('%Y-%m-%d')
+                print(f'Formatted date: {formatted_date}, image folder path: {elem}')
+                extracted_data.append((elem, formatted_date))
             else:
                 print("No date found in the text.")
+                extracted_data.append((elem, "No date found"))
+
+        df = pd.DataFrame(extracted_data, columns=["Image folder path", "Extracted Date"])
+        df.to_excel("extracted_dates.xlsx", index = False)
+        print("Data saved to extracted_dates.xlsx")
 
     do_iterate = False
     if do_iterate:
