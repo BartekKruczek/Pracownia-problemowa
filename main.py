@@ -32,11 +32,11 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    for year in years:
-        for elem in utils.yield_json_files(year = year):
-            json_data = data.read_json_data(elem)
-            json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-            print(json_text[:50])
+    # for year in years:
+    #     for elem in utils.yield_json_files(year = year):
+    #         json_data = data.read_json_data(elem)
+    #         json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
+    #         print(json_text[:50])
 
     # read json data
     # json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
@@ -79,7 +79,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = False
+    do_debug_combine = True
     if do_debug_combine:
         image_folders = []
         for year in years:

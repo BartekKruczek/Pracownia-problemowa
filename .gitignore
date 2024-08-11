@@ -11,3 +11,4 @@ __pycache__/
 *.gz
 Output/
 *.xlsx
+test.py

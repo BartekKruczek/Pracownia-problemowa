@@ -250,19 +250,32 @@ class Data():
             "12": 12
         }
 
-        # Wzorzec uwzględniający różne separatory i formaty
-        search_pattern = r'\b(\d{1,2})(?:\s*[-/.\s]?\s*)(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrzesnia|września|pazdziernika|października|listopada|grudnia|\d{1,2})(?:\s*[-/.\s]?\s*)(\d{4})\b'
+        search_pattern = (
+            r'\b(\d{1,2})(?:\s*[-/.\s]?\s*)'
+            r'(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrzesnia|września|pazdziernika|października|listopada|grudnia|\d{1,2})(?:\s*[-/.\s]?\s*)'
+            r'(\d{4})\b'
+            r'|'
+            r'\b(\d{4})-(\d{2})-(\d{2})\b'
+        )
 
         match = re.search(search_pattern, text, re.IGNORECASE)
         if match:
-            day = int(match.group(1))
-            month = miesiace.get(match.group(2).lower(), None)
-            year = int(match.group(3))
-            if month is not None:
-                try:
-                    return datetime(year, month, day)
-                except ValueError:
-                    return None
+            if match.group(1) and match.group(3):
+                day = int(match.group(1))
+                month = miesiace.get(match.group(2).lower(), None)
+                year = int(match.group(3))
+            elif match.group(4) and match.group(5) and match.group(6):
+                year = int(match.group(4))
+                month = int(match.group(5))
+                day = int(match.group(6))
+            else:
+                return None
+
+            try:
+                return datetime(year, month, day)
+            except ValueError:
+                return None
+        
         return None
 
     def get_data_json(self, path: str) -> str:
