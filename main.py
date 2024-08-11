@@ -31,13 +31,17 @@ def main():
     # combined = data.combine_text_to_one_string(cleaned_text)
     # print(f"Pdf text \n{combined}")
 
-    # yield json files
-    # print(*utils.yield_json_files())
+    # yield json files, updated
+    for year in years:
+        for elem in utils.yield_json_files(year = year):
+            json_data = data.read_json_data(elem)
+            json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
+            print(json_text[:50])
 
     # read json data
     # json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
     # json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-    # rint(f"Json text \n{json_text}")
+    # print(f"Json text \n{json_text}")
 
     # perform LCS, only one pdf file and one json file
     # print(utils.longest_common_subsequence_dynamic(utils.list_of_json_paths(), combined))
@@ -75,7 +79,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = True
+    do_debug_combine = False
     if do_debug_combine:
         image_folders = []
         for year in years:

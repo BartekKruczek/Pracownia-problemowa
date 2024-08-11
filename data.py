@@ -61,7 +61,7 @@ class Data():
         if not extracted_text:
             return ""
 
-        joined = ''.join(extracted_text)
+        joined = ' '.join(extracted_text)
         return joined
     
     def get_text_from_pdf(self, pdf_path: str) -> str:
@@ -144,8 +144,9 @@ class Data():
         # return ' '.join(list)
     
     def clean_text_from_json(self, string: str) -> str:
-        string = ''.join(string.split()).lower()
-        string = string.replace('\n', '').replace('\r', '').replace(' ', '')
+        # string = ''.join(string.split()).lower()
+        string = string.replace('\n', ' ').replace('\r', ' ')
+        string = re.sub(r'\s+', ' ', string).strip().lower()
         return string
     
     def delete_unwanted_folders(self):
@@ -234,21 +235,35 @@ class Data():
             "pazdziernika": 10,
             "października": 10,
             "listopada": 11,
-            "grudnia": 12
+            "grudnia": 12,
+            "01": 1, "1": 1,
+            "02": 2, "2": 2,
+            "03": 3, "3": 3,
+            "04": 4, "4": 4,
+            "05": 5, "5": 5,
+            "06": 6, "6": 6,
+            "07": 7, "7": 7,
+            "08": 8, "8": 8,
+            "09": 9, "9": 9,
+            "10": 10,
+            "11": 11,
+            "12": 12
         }
 
-        search_pattern = r'\b(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrzesnia|września|pazdziernika|października|listopada|grudnia)\s+(\d{4})\s*r?\.'
-        date_counter = 0
-      
-        match = re.search(search_pattern, text)
+        # Wzorzec uwzględniający różne separatory i formaty
+        search_pattern = r'\b(\d{1,2})(?:\s*[-/.\s]?\s*)(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrzesnia|września|pazdziernika|października|listopada|grudnia|\d{1,2})(?:\s*[-/.\s]?\s*)(\d{4})\b'
+
+        match = re.search(search_pattern, text, re.IGNORECASE)
         if match:
             day = int(match.group(1))
-            month = miesiace[match.group(2)]
+            month = miesiace.get(match.group(2).lower(), None)
             year = int(match.group(3))
-            try:
-                date_counter += 1
-                if date_counter == 1:
+            if month is not None:
+                try:
                     return datetime(year, month, day)
-            except ValueError:
-                return None
+                except ValueError:
+                    return None
         return None
+
+    def get_data_json(self, path: str) -> str:
+        pass
