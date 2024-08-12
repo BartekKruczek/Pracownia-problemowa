@@ -32,7 +32,7 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    do_excel_json = False
+    do_excel_json = True
     if do_excel_json:
         extracted_data = []
         for year in years:
@@ -89,7 +89,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = False
+    do_debug_combine = True
     if do_debug_combine:
         image_folders = []
         for year in years:

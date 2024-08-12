@@ -220,7 +220,7 @@ class Data():
                 print(f"An error occurred while extracting text from images in {image_folder}: {e}")
                 return "Text not extracted!"
 
-    def get_text_data(self, text: str):
+    def get_text_data(text: str):
         miesiace = {
             "stycznia": 1,
             "lutego": 2,
@@ -258,25 +258,35 @@ class Data():
             r'\b(\d{4})-(\d{2})-(\d{2})\b'
         )
 
-        match = re.search(search_pattern, text, re.IGNORECASE)
-        if match:
-            if match.group(1) and match.group(3):
-                day = int(match.group(1))
-                month = miesiace.get(match.group(2).lower(), None)
-                year = int(match.group(3))
-            elif match.group(4) and match.group(5) and match.group(6):
-                year = int(match.group(4))
-                month = int(match.group(5))
-                day = int(match.group(6))
+        matches = re.findall(search_pattern, text, re.IGNORECASE)
+
+        dates = []
+
+        for match in matches:
+            if match[0] and match[2]:
+                day = int(match[0])
+                month = miesiace.get(match[1].lower(), None)
+                year = int(match[2])
+            elif match[3] and match[4] and match[5]:
+                year = int(match[3])
+                month = int(match[4])
+                day = int(match[5])
             else:
-                return None
+                continue
 
             try:
-                return datetime(year, month, day)
+                dates.append(datetime(year, month, day))
             except ValueError:
-                return None
+                continue
         
-        return None
+        if len(dates) >= 2:
+            return dates[1]
+        elif len(dates) == 1:
+            print("Only one date found, unable to find a second date.")
+            return None
+        else:
+            print("No dates found in the text.")
+            return None
 
     def get_data_json(self, path: str) -> str:
         pass
