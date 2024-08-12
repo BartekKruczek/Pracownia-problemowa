@@ -32,19 +32,21 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    extracted_data = []
-    for year in years:
-        for elem in utils.yield_json_files(year = year):
-            json_data = data.read_json_data(elem)
-            json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-            json_text_data = data.get_text_data(json_text)
-            formatted_date = json_text_data.strftime('%Y-%m-%d') if json_text_data else "No date found"
-            print(f"Json file: {elem}, extracted date: {formatted_date}")
-            extracted_data.append((elem, formatted_date))
+    do_excel_json = False
+    if do_excel_json:
+        extracted_data = []
+        for year in years:
+            for elem in utils.yield_json_files(year = year):
+                json_data = data.read_json_data(elem)
+                json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
+                json_text_data = data.get_text_data(json_text)
+                formatted_date = json_text_data.strftime('%Y-%m-%d') if json_text_data else "No date found"
+                print(f"Json file: {elem}, extracted date: {formatted_date}")
+                extracted_data.append((elem, formatted_date))
 
-    df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date"])
-    df.to_excel("extracted_json_dates.xlsx", index=False)
-    print("Data saved to extracted_json_dates.xlsx")
+        df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date"])
+        df.to_excel("extracted_json_dates.xlsx", index=False)
+        print("Data saved to extracted_json_dates.xlsx")
 
     # read json data
     # json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
@@ -135,6 +137,8 @@ def main():
 
             # utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
+
+    # utils.find_matching_dates()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

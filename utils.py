@@ -304,3 +304,23 @@ class Utils():
                             print(f"JSON text: {json_text[:100]} \n")
             else:
                 print(f"No LCS values found for {folder}")
+
+    def find_matching_dates(self, excel_1: str = 'extracted_dates.xlsx', excel_2: str = 'extracted_json_dates.xlsx', output_excel: str = 'matching_dates.xlsx') -> None:
+        # Wczytaj pliki Excel do DataFrame'ów
+        df1 = pd.read_excel(excel_1)
+        df2 = pd.read_excel(excel_2)
+
+        # Konwersja kolumny dat na format daty, z usunięciem wierszy bez daty
+        df1['Extracted Date'] = pd.to_datetime(df1['Extracted Date'], errors='coerce').dt.date
+        df2['Extracted Date'] = pd.to_datetime(df2['Extracted Date'], errors='coerce').dt.date
+
+        df1 = df1.dropna(subset=['Extracted Date'])
+        df2 = df2.dropna(subset=['Extracted Date'])
+
+        # Znajdź dopasowane daty między dwoma DataFrame'ami
+        matching_dates = pd.merge(df1, df2, on='Extracted Date', how='inner', suffixes=('_pdf', '_json'))
+
+        # Zapisz wyniki do nowego pliku Excel
+        matching_dates.to_excel(output_excel, index=False, columns=['Image folder path', 'JSON file path', 'Extracted Date'])
+        print(f"Matching dates saved to {output_excel}")
+
