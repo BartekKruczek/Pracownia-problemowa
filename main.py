@@ -32,22 +32,36 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    do_excel_json = False
+    do_excel_json = True
     if do_excel_json:
         extracted_data = []
+        skipped_files = []
+        skipped_count = 0
+
         for year in years:
             for elem in utils.yield_json_files(year=year):
                 json_data = data.read_json_data(elem)
                 json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
                 json_text_data = data.get_text_data(text = json_text, only_first_date = True)
                 formatted_date = json_text_data if json_text_data else "No date found"
+
+                if formatted_date == "No date found":
+                    skipped_files.append(elem)
+                    skipped_count += 1
+                else:
+                    extracted_data.append((elem, formatted_date))
+
                 print(f"Json file: {elem}, extracted date: {formatted_date}")
-                extracted_data.append((elem, formatted_date))
 
 
         df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date"])
         df.to_excel("extracted_json_dates.xlsx", index=False)
         print("Data saved to extracted_json_dates.xlsx")
+
+        if skipped_files:
+            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped JSON file path"])
+            skipped_df.to_excel("no_dates_found_json.xlsx", index = False)
+            print(f"Skipped files saved to no_dates_found_json.xlsx with {skipped_count} entries.")
 
     # read json data
     # json_data = data.read_json_data('lemkin-json-from-html/2014/2014_1594.json')
@@ -139,7 +153,7 @@ def main():
             # utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
-    utils.find_matching_dates()
+    # utils.find_matching_dates()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
