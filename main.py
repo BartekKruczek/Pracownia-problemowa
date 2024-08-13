@@ -56,7 +56,7 @@ def main():
                 print(f"Json file: {elem}, extracted date: {formatted_date}")
 
 
-        df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date", "Text"])
+        df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date", "Text_json"])
         df.to_excel("extracted_json_dates.xlsx", index=False, engine="openpyxl")
         print("Data saved to extracted_json_dates.xlsx")
         print(f"Extracted_count: {extracted_count}")
@@ -107,7 +107,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = True
+    do_debug_combine = False
     if do_debug_combine:
         image_folders = []
         for year in years:
@@ -170,6 +170,8 @@ def main():
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
     # utils.find_matching_dates()
+    # utils.calculate_cosine_similarity()
+    # utils.check_similarities()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

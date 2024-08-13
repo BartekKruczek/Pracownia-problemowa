@@ -2,6 +2,7 @@ import os
 import pypdfium2 as pdfium
 import pandas as pd
 import pylcs
+import spacy
 
 class Utils():
     def __init__(self, json_path: str, pdf_path: str) -> None:
@@ -321,6 +322,36 @@ class Utils():
         matching_dates = pd.merge(df1, df2, on='Extracted Date', how='inner', suffixes=('_pdf', '_json'))
 
         # Zapisz wyniki do nowego pliku Excel
-        matching_dates.to_excel(output_excel, index=False, columns=['Image folder path', 'JSON file path', 'Extracted Date'])
+        matching_dates.to_excel(output_excel, index=False, columns=['Image folder path', 'JSON file path', 'Extracted Date', 'Text_json', 'Text'])
         print(f"Matching dates saved to {output_excel}")
+
+    def calculate_cosine_similarity(self, excel_path = "matching_dates.xlsx"):
+        df = pd.read_excel(excel_path)
+
+        nlp = spacy.load("pl_core_news_lg")
+
+        def calculate_similarity(text1, text2):
+            doc1 = nlp(text1)
+            doc2 = nlp(text2)
+            return doc1.similarity(doc2)
+        
+        similarities = []
+        for _, row in df.iterrows():
+            similarity = calculate_similarity(row['Text'], row['Text_json'])
+            similarities.append(similarity)
+
+        df['Cosine Similarity'] = similarities
+
+        # update the excel file
+        df.to_excel(excel_path, index=False, engine="openpyxl")
+
+    def check_similarities(self, excel_path = "matching_dates.xlsx"):
+        df = pd.read_excel(excel_path)
+
+        for _, row in df.iterrows():
+            if row['Cosine Similarity'] > 0.98:
+                # wyświetlanie numeru wiersza
+                print(f"Row number: {row.name}")
+                print(f"PDF text: {row['Text'][:300]}")
+                print(f"JSON text: {row['Text_json'][:300]}")
 

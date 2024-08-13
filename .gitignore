@@ -12,3 +12,4 @@ __pycache__/
 Output/
 *.xlsx
 test.py
+*.png
