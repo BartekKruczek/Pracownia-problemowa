@@ -32,17 +32,18 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    do_excel_json = True
+    do_excel_json = False
     if do_excel_json:
         extracted_data = []
         for year in years:
-            for elem in utils.yield_json_files(year = year):
+            for elem in utils.yield_json_files(year=year):
                 json_data = data.read_json_data(elem)
                 json_text = data.clean_text_from_json(data.get_text_from_json(json_data))
-                json_text_data = data.get_text_data(json_text)
-                formatted_date = json_text_data.strftime('%Y-%m-%d') if json_text_data else "No date found"
+                json_text_data = data.get_text_data(text = json_text, only_first_date = True)
+                formatted_date = json_text_data if json_text_data else "No date found"
                 print(f"Json file: {elem}, extracted date: {formatted_date}")
                 extracted_data.append((elem, formatted_date))
+
 
         df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date"])
         df.to_excel("extracted_json_dates.xlsx", index=False)
@@ -89,7 +90,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = True
+    do_debug_combine = False
     if do_debug_combine:
         image_folders = []
         for year in years:
@@ -107,11 +108,11 @@ def main():
         for elem in image_folders:
             text = data.get_text_from_images(image_folder = elem, first_png_only = True)
 
-            # data dokumentu
-            date = data.get_text_data(text)
+            # data dokumentu, dla pdf-ów chcemy drugą datę
+            date = data.get_text_data(text = text, only_first_date = False)
 
             if date is not None:
-                formatted_date = date.strftime('%Y-%m-%d')
+                formatted_date = date if date else "No date found"
                 print(f'Formatted date: {formatted_date}, image folder path: {elem}')
                 extracted_data.append((elem, formatted_date))
             else:
@@ -138,7 +139,7 @@ def main():
             # utils.find_max_lcs(utils.yield_json_files(year = year), utils.png_paths_creator(year), data, year)
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
-    # utils.find_matching_dates()
+    utils.find_matching_dates()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

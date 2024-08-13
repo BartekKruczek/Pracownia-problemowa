@@ -220,7 +220,7 @@ class Data():
                 print(f"An error occurred while extracting text from images in {image_folder}: {e}")
                 return "Text not extracted!"
 
-    def get_text_data(text: str):
+    def get_text_data(self, text: str, only_first_date: bool = False) -> datetime:
         miesiace = {
             "stycznia": 1,
             "lutego": 2,
@@ -259,7 +259,6 @@ class Data():
         )
 
         matches = re.findall(search_pattern, text, re.IGNORECASE)
-
         dates = []
 
         for match in matches:
@@ -274,19 +273,26 @@ class Data():
             else:
                 continue
 
-            try:
-                dates.append(datetime(year, month, day))
-            except ValueError:
-                continue
-        
-        if len(dates) >= 2:
-            return dates[1]
-        elif len(dates) == 1:
-            print("Only one date found, unable to find a second date.")
-            return None
-        else:
-            print("No dates found in the text.")
-            return None
+            if month is not None:
+                try:
+                    dates.append(datetime(year, month, day))
+                except ValueError:
+                    continue
+            else:
+                print(f"Invalid month value: {match[1]} in the text. Skipping this date.")
 
-    def get_data_json(self, path: str) -> str:
-        pass
+        if only_first_date:
+            if len(dates) >= 1:
+                return dates[0]
+            else:
+                print("No dates found in the text.")
+                return None
+        else:
+            if len(dates) >= 2:
+                return dates[1]
+            elif len(dates) == 1:
+                print("Only one date found, unable to find a second date.")
+                return None
+            else:
+                print("No dates found in the text.")
+                return None
