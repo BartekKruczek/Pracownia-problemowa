@@ -1,11 +1,13 @@
 import time
 import os
 import pandas as pd
+import warnings
 
 from data import Data
 from utils import Utils
 
 def main():
+    warnings.filterwarnings("ignore")
     start_time = time.time()
 
     data = Data(json_path='lemkin-json-from-html', pdf_path=  'lemkin-pdf')
@@ -170,8 +172,9 @@ def main():
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
     # utils.find_matching_dates()
-    # utils.calculate_cosine_similarity()
-    # utils.check_similarities()
+    utils.calculate_cosine_similarity()
+    utils.check_similarities()
+    # utils.spacy_tester()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

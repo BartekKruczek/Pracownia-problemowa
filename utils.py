@@ -325,19 +325,23 @@ class Utils():
         matching_dates.to_excel(output_excel, index=False, columns=['Image folder path', 'JSON file path', 'Extracted Date', 'Text_json', 'Text'])
         print(f"Matching dates saved to {output_excel}")
 
-    def calculate_cosine_similarity(self, excel_path = "matching_dates.xlsx"):
+    def calculate_cosine_similarity(self, excel_path = "matching_dates.xlsx", lemmatize = True):
         df = pd.read_excel(excel_path)
 
         nlp = spacy.load("pl_core_news_lg")
 
         def calculate_similarity(text1, text2):
-            doc1 = nlp(text1)
-            doc2 = nlp(text2)
+            if lemmatize:
+                doc1 = nlp(" ".join([token.lemma_ for token in nlp(text1)]))
+                doc2 = nlp(" ".join([token.lemma_ for token in nlp(text2)]))
+            else:
+                doc1 = nlp(text1)
+                doc2 = nlp(text2)
             return doc1.similarity(doc2)
         
         similarities = []
         for _, row in df.iterrows():
-            similarity = calculate_similarity(row['Text'], row['Text_json'])
+            similarity = calculate_similarity(row['Text'].lower(), row['Text_json'].lower())
             similarities.append(similarity)
 
         df['Cosine Similarity'] = similarities
@@ -354,4 +358,20 @@ class Utils():
                 print(f"Row number: {row.name}")
                 print(f"PDF text: {row['Text'][:300]}")
                 print(f"JSON text: {row['Text_json'][:300]}")
+                print(f"Cosine similarity: {row['Cosine Similarity']}")
 
+    def spacy_tester(self):
+        nlp = spacy.load("pl_core_news_lg")
+        df = pd.read_excel("matching_dates.xlsx")
+
+        # get the first row, Text column
+        text = df.iloc[0]['Text'].lower()
+        print(f"Before lemmatization: {text}")
+
+        doc = nlp(text)
+        lemmatized_text = " ".join([token.lemma_ for token in doc])
+        print(f"After lemmatization: {lemmatized_text}")
+        doc2 = nlp(lemmatized_text)
+
+        # compare the similarity between the original and lemmatized text
+        print(f"Similarity between original and lemmatized text: {doc.similarity(doc2)}")
