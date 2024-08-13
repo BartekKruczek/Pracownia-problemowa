@@ -32,11 +32,12 @@ def main():
     # print(f"Pdf text \n{combined}")
 
     # yield json files, updated
-    do_excel_json = True
+    do_excel_json = False
     if do_excel_json:
         extracted_data = []
         skipped_files = []
         skipped_count = 0
+        extracted_count = 0
 
         for year in years:
             for elem in utils.yield_json_files(year=year):
@@ -46,20 +47,22 @@ def main():
                 formatted_date = json_text_data if json_text_data else "No date found"
 
                 if formatted_date == "No date found":
-                    skipped_files.append(elem)
+                    skipped_files.append((elem, json_text))
                     skipped_count += 1
                 else:
-                    extracted_data.append((elem, formatted_date))
+                    extracted_data.append((elem, formatted_date, json_text))
+                    extracted_count += 1
 
                 print(f"Json file: {elem}, extracted date: {formatted_date}")
 
 
-        df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date"])
-        df.to_excel("extracted_json_dates.xlsx", index=False)
+        df = pd.DataFrame(extracted_data, columns=["JSON file path", "Extracted Date", "Text"])
+        df.to_excel("extracted_json_dates.xlsx", index=False, engine="openpyxl")
         print("Data saved to extracted_json_dates.xlsx")
+        print(f"Extracted_count: {extracted_count}")
 
         if skipped_files:
-            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped JSON file path"])
+            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped JSON file path", "Text"])
             skipped_df.to_excel("no_dates_found_json.xlsx", index = False)
             print(f"Skipped files saved to no_dates_found_json.xlsx with {skipped_count} entries.")
 
@@ -104,7 +107,7 @@ def main():
 
         print(image_folders)
 
-    do_debug_combine = False
+    do_debug_combine = True
     if do_debug_combine:
         image_folders = []
         for year in years:
@@ -119,6 +122,9 @@ def main():
         # print(image_folders)
 
         extracted_data = []
+        skipped_files = []
+        skipped_count = 0
+        extracted_count = 0
         for elem in image_folders:
             text = data.get_text_from_images(image_folder = elem, first_png_only = True)
 
@@ -128,14 +134,24 @@ def main():
             if date is not None:
                 formatted_date = date if date else "No date found"
                 print(f'Formatted date: {formatted_date}, image folder path: {elem}')
-                extracted_data.append((elem, formatted_date))
+                extracted_data.append((elem, formatted_date, text))
+                extracted_count += 1
             else:
                 print("No date found in the text.")
-                extracted_data.append((elem, "No date found"))
+                extracted_data.append((elem, "No date found", text))
 
-        df = pd.DataFrame(extracted_data, columns=["Image folder path", "Extracted Date"])
-        df.to_excel("extracted_dates.xlsx", index = False)
+                skipped_files.append((elem, text))
+                skipped_count += 1
+
+        df = pd.DataFrame(extracted_data, columns=["Image folder path", "Extracted Date", "Text"])
+        df.to_excel("extracted_dates.xlsx", index = False, engine = "openpyxl")
         print("Data saved to extracted_dates.xlsx")
+        print(f"Extracted counter: {extracted_count}")
+
+        if skipped_files:
+            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped pdf file path", "Text"])
+            skipped_df.to_excel("no_dates_found_pdf.xlsx", index = False, engine = "openpyxl")
+            print(f"Skipped files saved to no_dates_found_pdf.xlsx with {skipped_count} entries.")
 
     do_iterate = False
     if do_iterate:
