@@ -375,3 +375,29 @@ class Utils():
 
         # compare the similarity between the original and lemmatized text
         print(f"Similarity between original and lemmatized text: {doc.similarity(doc2)}")
+
+    def create_list_of_similarities(self) -> list[dict]:
+        path: str = "./matching_dates.xlsx"
+
+        if os.path.exists(path):
+            df = pd.read_excel(path)
+        else:
+            print(f"File {path} does not exist.")
+            return
+        
+        similarity_threshold: float = 0.98
+        similarities: list = []
+
+        # dict = {cosine_similarity: (image_folder_path, json_file_path)}
+        for _, row in df.iterrows():
+            if row['Cosine Similarity'] > similarity_threshold:
+                my_dict: dict = {}
+                my_dict[row['Cosine Similarity']] = (row['Image folder path'], row['JSON file path'])
+                similarities.append(my_dict)
+
+        # debug
+        # print(f"Number of similar texts: {len(similarities)}")
+        # print(f"Similarities: {similarities}")
+
+    def find_start_end_each_page(self) -> pd.ExcelFile:
+        pass

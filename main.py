@@ -172,9 +172,10 @@ def main():
             utils.find_max_lcs_folders(utils.yield_json_files(year=year), image_folders, data, year)
 
     # utils.find_matching_dates()
-    utils.calculate_cosine_similarity()
-    utils.check_similarities()
+    # utils.calculate_cosine_similarity()
+    # utils.check_similarities()
     # utils.spacy_tester()
+    utils.create_list_of_similarities()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
