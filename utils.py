@@ -4,8 +4,11 @@ import pandas as pd
 import pylcs
 import spacy
 
-class Utils():
+from data import Data
+
+class Utils(Data):
     def __init__(self, json_path: str, pdf_path: str) -> None:
+        super().__init__(json_path, pdf_path)
         self.base_json_path = json_path
         self.base_pdf_path = pdf_path
 
@@ -399,5 +402,30 @@ class Utils():
         # print(f"Number of similar texts: {len(similarities)}")
         # print(f"Similarities: {similarities}")
 
+        return similarities
+
     def find_start_end_each_page(self) -> pd.ExcelFile:
-        pass
+        my_list: list[dict] = self.create_list_of_similarities()
+
+        # only first element for now
+        first_elem = my_list[0]
+        # print(f"First element: {first_elem}")
+
+        # load first page from first element from first value
+        png_folder_path = first_elem[list(first_elem.keys())[0]][0]
+        # print(f"PNG folder path: {png_folder_path}")
+
+        first_page_text = ""
+        for root, dirs, files in os.walk(png_folder_path):
+            for file in files:
+                if file.endswith('.png'):
+                    # get first page
+                    first_page = os.path.join(root, file)
+                    
+                    # text from first page
+                    first_page_text = self.get_text_from_png(first_page)
+                    first_page_text = self.clean_text(first_page_text)
+                    first_page_text = self.combine_text_to_one_string(first_page_text)
+                    break
+
+        print(f"First page text: {first_page_text}")

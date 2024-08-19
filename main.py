@@ -175,7 +175,7 @@ def main():
     # utils.calculate_cosine_similarity()
     # utils.check_similarities()
     # utils.spacy_tester()
-    utils.create_list_of_similarities()
+    utils.find_start_end_each_page()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
