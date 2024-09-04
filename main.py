@@ -177,6 +177,9 @@ def main():
     # utils.spacy_tester()
     # utils.find_start_end_each_page()
 
+    # delete duplicates
+    
+
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
     print(f"Czas wykonania: {elapsed_time:.2f} minut")

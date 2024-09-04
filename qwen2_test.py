@@ -4,6 +4,7 @@ from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoPro
 from qwen_vl_utils import process_vision_info
 
 device = "cuda" if torch.cuda.is_available() else "mps"
+# torch.__version__  = 2.4.0+cu121
 
 # default: Load the model on the available device(s)
 # model = Qwen2VLForConditionalGeneration.from_pretrained(
@@ -14,7 +15,7 @@ device = "cuda" if torch.cuda.is_available() else "mps"
 model = Qwen2VLForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2-VL-2B-Instruct",
     torch_dtype=torch.bfloat16,
-    attn_implementation="flash_attention_2",
+    # attn_implementation="flash_attention_2",
     device_map=device,
 )
 
@@ -32,7 +33,8 @@ messages = [
         "content": [
             {
                 "type": "image",
-                "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
+                # "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
+                "image": "lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png"
             },
             {"type": "text", "text": "Describe this image."},
         ],
