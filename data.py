@@ -301,4 +301,13 @@ class Data():
                 return None
             
     def remove_duplicates_xlsx(self, path:str = None) -> pd.ExcelFile:
-        pass
+        xlsx_path = "matching_dates.xlsx"
+
+        if os.path.exists(xlsx_path):
+            df = pd.read_excel(xlsx_path)
+            df.drop_duplicates(inplace=True)
+            df.to_excel(xlsx_path, index=False, engine="openpyxl")
+            return pd.ExcelFile(xlsx_path)
+        else:
+            print(f"Function {self.remove_duplicates_xlsx.__name__}: File {xlsx_path} not found.")
+            return None

@@ -14,7 +14,7 @@ def main():
     utils = Utils(json_path='lemkin-json-from-html', pdf_path = 'lemkin-pdf')
 
     # how many files are there in both directories
-    print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
+    # print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
 
     # converting pdf to png
     once_converted = False
@@ -177,8 +177,8 @@ def main():
     # utils.spacy_tester()
     # utils.find_start_end_each_page()
 
-    # delete duplicates
-    
+    # delete duplicates, DO NOT TOUCH!!!
+    data.remove_duplicates_xlsx()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
