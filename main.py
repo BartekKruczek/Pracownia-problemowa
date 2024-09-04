@@ -14,7 +14,7 @@ def main():
     utils = Utils(json_path='lemkin-json-from-html', pdf_path = 'lemkin-pdf')
 
     # how many files are there in both directories
-    # print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
+    print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
 
     # converting pdf to png
     once_converted = False
@@ -64,7 +64,7 @@ def main():
         print(f"Extracted_count: {extracted_count}")
 
         if skipped_files:
-            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped JSON file path", "Text"])
+            skipped_df = pd.DataFrame(skipped_files, columns=["Skipped JSON file path", "Text_json"])
             skipped_df.to_excel("no_dates_found_json.xlsx", index = False)
             print(f"Skipped files saved to no_dates_found_json.xlsx with {skipped_count} entries.")
 
@@ -175,7 +175,7 @@ def main():
     # utils.calculate_cosine_similarity()
     # utils.check_similarities()
     # utils.spacy_tester()
-    utils.find_start_end_each_page()
+    # utils.find_start_end_each_page()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

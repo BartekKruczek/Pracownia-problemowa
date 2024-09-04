@@ -30,10 +30,12 @@ class Data():
                     files_counter_json += 1
 
         # for pdf data
-        for root, dirs, files in os.walk(self.pdf_path):
-            for dir in dirs:
-                for file in os.listdir(os.path.join(root, dir)):
-                    files_counter_pdf += 1
+        if self.pdf_path:
+            for root, dirs, files in os.walk(self.pdf_path):
+                for file in files:
+                    if file.endswith('.pdf'):
+                        files_counter_pdf += 1
+                        print(f"PDF file: {os.path.join(root, file)}")
 
         return files_counter_json, files_counter_pdf
     
