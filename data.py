@@ -4,6 +4,7 @@ import json
 import pdf2image
 import pytesseract
 import re
+import pandas as pd
 
 from PIL import Image
 from datetime import datetime
@@ -298,3 +299,6 @@ class Data():
             else:
                 print("No dates found in the text.")
                 return None
+            
+    def remove_duplicates_xlsx(self, path:str = None) -> pd.ExcelFile:
+        pass
