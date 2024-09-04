@@ -13,3 +13,5 @@ Output/
 *.xlsx
 test.py
 *.png
+*.jpg
+*.pdf
