@@ -311,3 +311,36 @@ class Data():
         else:
             print(f"Function {self.remove_duplicates_xlsx.__name__}: File {xlsx_path} not found.")
             return None
+        
+    def clean_xlsx(self, path:str = None) -> pd.ExcelFile:
+        self.remove_duplicates_xlsx(path)
+        xlsx_path = "matching_dates.xlsx"
+
+        if os.path.exists(xlsx_path):
+            df = pd.read_excel(xlsx_path)
+            
+            try:
+                df['PDF file path digits'] = df['Image folder path'].apply(
+                lambda x: int(re.search(r'D(\d+)', x).group(1)) if re.search(r'D(\d+)', x) else None
+            )
+                
+                df['JSON file path digits'] = df['JSON file path'].apply(
+                lambda x: int(re.search(r'(\d+)_(\d+)\.json', x).group(2)) if re.search(r'(\d+)_(\d+)\.json', x) else None
+            )
+            except Exception as e:
+                print(f"An error occurred in {self.clean_xlsx.__name__}: {e}")
+                return None
+            
+            # now if we have 4 digits in JSON file path digits, we keep 4 last digits from PDF file path digits
+            # if we have 3 digits in JSON file path digits, we keep 3 last digits from PDF file path digits
+
+            df['PDF file path digits'] = df.apply(
+                lambda x: int(str(x['PDF file path digits'])[-4:]) if x['PDF file path digits'] else None, axis=1
+            )
+
+            # save
+            df.to_excel(xlsx_path, index=False, engine="openpyxl")
+            return pd.ExcelFile(xlsx_path)
+        else:
+            print(f"Function {self.clean_xlsx.__name__}: File {xlsx_path} not found.")
+            return None

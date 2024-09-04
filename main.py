@@ -177,8 +177,8 @@ def main():
     # utils.spacy_tester()
     # utils.find_start_end_each_page()
 
-    # delete duplicates, DO NOT TOUCH!!!
-    data.remove_duplicates_xlsx()
+    # DO NOT TOUCH!!!
+    data.clean_xlsx()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
