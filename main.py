@@ -179,6 +179,7 @@ def main():
 
     # DO NOT TOUCH!!!
     data.clean_xlsx()
+    data.create_new_xlsx()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

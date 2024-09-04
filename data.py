@@ -344,3 +344,22 @@ class Data():
         else:
             print(f"Function {self.clean_xlsx.__name__}: File {xlsx_path} not found.")
             return None
+        
+    def create_new_xlsx(self, path:str = None) -> pd.ExcelFile:
+        xlsx_path = "matching_dates.xlsx"
+        new_xlsx_path = "matching_dates_cleaned.xlsx"
+
+        if os.path.exists(xlsx_path):
+            df = pd.read_excel(xlsx_path)
+            
+            # compare PDF file path digits with JSON file path digits, if they are the same, we keep the row
+            df = df[df['PDF file path digits'] == df['JSON file path digits']]
+
+            # sort descending by value in Cosine Similarity
+            df.sort_values(by='Cosine Similarity', ascending=False, inplace=True)
+
+            df.to_excel(new_xlsx_path, index=False, engine="openpyxl")
+            return pd.ExcelFile(xlsx_path)
+        else:
+            print(f"Function {self.create_new_xlsx.__name__}: File {xlsx_path} not found.")
+            return None
