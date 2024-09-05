@@ -363,3 +363,15 @@ class Data():
         else:
             print(f"Function {self.create_new_xlsx.__name__}: File {xlsx_path} not found.")
             return None
+        
+    def get_xlsx_data(self, path:str = None) -> pd.DataFrame:
+        try:
+            if os.path.exists(path):
+                df = pd.read_excel(path)
+                return df
+            else:
+                print(f"Function {self.get_xlsx_data.__name__}: File {path} not found.")
+                return None
+        except Exception as e:
+            print(f"Function {self.get_xlsx_data.__name__} error: {e}")
+            return None

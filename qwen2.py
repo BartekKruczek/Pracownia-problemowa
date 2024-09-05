@@ -1,13 +1,15 @@
 import torch
 import json
-import pandas as pd
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
+from data import Data
 
-class Qwen2():
+class Qwen2(Data):
     def __init__(self) -> None:
-        self.device = "cuda" if torch.cuda.is_available() else "mps"
+        super().__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "mps")
+        self.xlsx_path = "matching_dates_cleaned.xlsx"
 
     def __repr__(self) -> str:
         return "Klasa do obsługi modelu Qwen2"
@@ -31,6 +33,7 @@ class Qwen2():
         return processor
 
     def get_messages(self) -> list:
+        df = self.get_xlsx_data(self.xlsx_path)
         messages = [
             {
                 "role": "user",
@@ -41,7 +44,7 @@ class Qwen2():
                         # "image": "lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png",
                         "image": "page_0.png"
                     },
-                    {"type": "json", "json": "lemkin-json-from-html/1918/1918_2.json"},
+                    {"type": "json", "json": df["JSON file path"].iloc[0]},
                     {"type": "text", "text": "Can you make json from image similar to what I gave you? As output give me just json structure which can be dumped."},
                 ],
             }
@@ -82,13 +85,6 @@ class Qwen2():
         return output_text
 
     def create_json(self) -> json:
-        try:
-            df = pd.read_excel("matching_dates_cleaned.xlsx")
-            df = df.head(10)
-            print(df)
-        except Exception as e:
-            print(f"Function {self.create_json.__name__} error: {e}")
-
         for elem in self.get_outputs():
             cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
 
