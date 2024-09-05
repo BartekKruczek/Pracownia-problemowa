@@ -1,4 +1,6 @@
 import torch
+import json
+import jsonpickle
 
 from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -34,9 +36,11 @@ messages = [
             {
                 "type": "image",
                 # "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
-                "image": "lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png"
+                # "image": "lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png",
+                "image": "page_0.png"
             },
-            {"type": "text", "text": "Describe this image."},
+            {"type": "json", "json": "lemkin-json-from-html/1918/1918_2.json"},
+            {"type": "text", "text": "Can you make json from image similar to what I gave you? As output give me just json structure which can be dumped."},
         ],
     }
 ]
@@ -57,7 +61,7 @@ inputs = processor(
 inputs = inputs.to(device)
 
 # Inference: Generation of the output
-generated_ids = model.generate(**inputs, max_new_tokens=128)
+generated_ids = model.generate(**inputs, max_new_tokens=512)
 generated_ids_trimmed = [
     out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
 ]
@@ -65,3 +69,11 @@ output_text = processor.batch_decode(
     generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
 )
 print(output_text)
+
+# dump the output to a json file
+with open("output.json", "w") as f:
+    json.dump(output_text, f)
+
+# dump the output to a json file using jsonpickle
+with open("output_jsonpickle.json", "w") as f:
+    f.write(jsonpickle.encode(output_text))
