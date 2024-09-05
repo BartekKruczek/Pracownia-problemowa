@@ -1,6 +1,5 @@
 import torch
 import json
-import jsonpickle
 
 from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -61,7 +60,7 @@ inputs = processor(
 inputs = inputs.to(device)
 
 # Inference: Generation of the output
-generated_ids = model.generate(**inputs, max_new_tokens=512)
+generated_ids = model.generate(**inputs, max_new_tokens=4096)
 generated_ids_trimmed = [
     out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
 ]
@@ -69,11 +68,18 @@ output_text = processor.batch_decode(
     generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
 )
 print(output_text)
+print(type(output_text))
 
-# dump the output to a json file
-with open("output.json", "w") as f:
-    json.dump(output_text, f)
+for elem in output_text:
+    cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
+    print(cleaned_text)
 
-# dump the output to a json file using jsonpickle
-with open("output_jsonpickle.json", "w") as f:
-    f.write(jsonpickle.encode(output_text))
+    # save the output to a JSON file
+    try:
+        with open("output.json", "w") as f:
+            json_obj = json.loads(cleaned_text)
+            json.dump(json_obj, f, indent=4)
+            print("JSON file saved successfully!")
+    except Exception as e:
+        print("Error saving JSON file:", e)
+        pass
