@@ -5,6 +5,7 @@ import warnings
 
 from data import Data
 from utils import Utils
+from qwen2 import Qwen2
 
 def main():
     warnings.filterwarnings("ignore")
@@ -12,6 +13,7 @@ def main():
 
     data = Data(json_path='lemkin-json-from-html', pdf_path=  'lemkin-pdf')
     utils = Utils(json_path='lemkin-json-from-html', pdf_path = 'lemkin-pdf')
+    qwen2 = Qwen2()
 
     # how many files are there in both directories
     # print("Detected {} .json and {} .pdf files".format(data.number_of_files()[0], data.number_of_files()[1]))
@@ -180,6 +182,9 @@ def main():
     # DO NOT TOUCH!!!
     data.clean_xlsx()
     data.create_new_xlsx()
+
+    # json section
+    qwen2.create_json()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
