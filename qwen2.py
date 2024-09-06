@@ -1,5 +1,6 @@
 import torch
 import json
+import os
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -31,41 +32,34 @@ class Qwen2(Data):
         processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
         return processor
+    
+    def get_images_for_training(self, folder_path: str = None) -> list[str]:
+        images_path: list[str] = []
+
+        for root, dirs, files in os.walk(folder_path):
+            for file in sorted(files):
+                if file.endswith(".png"):
+                    images_path.append(os.path.join(root, file))
+        
+        return images_path
 
     def get_messages(self) -> list:
         df = self.get_xlsx_data(self.xlsx_path)
+
+        images_path = self.get_images_for_training(folder_path = df["Image folder path"].iloc[0])
+
         messages = [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_0.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_1.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_2.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
-                        "image": "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png"
-                    },
-                    {"type": "json", "json": df["JSON file path"].iloc[0]},
-                    {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."}, 
-                ],
-            }
-        ]
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "image": img_path} for img_path in images_path 
+                    ] + [
+                        {"type": "image", "image": "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png"},
+                        {"type": "json", "json": df["JSON file path"].iloc[0]},
+                        {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."},
+                    ],
+                }
+            ]
 
         return messages
 
