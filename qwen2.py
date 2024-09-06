@@ -40,12 +40,23 @@ class Qwen2(Data):
                 "content": [
                     {
                         "type": "image",
-                        # "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
-                        # "image": "lemkin-pdf/2014/WDU20140000596/O/D20140596_png/page_0.png",
-                        "image": "page_0.png"
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
+                        "image": "page_0.png",
                     },
                     {"type": "json", "json": df["JSON file path"].iloc[0]},
-                    {"type": "text", "text": "Can you make json from image similar to what I gave you? As output give me just json structure which can be dumped."},
+                    {"type": "text", "text": "Can you make json from image similar to what I gave you? As output give me just json structure which can be dumped. Use polish language as well."}, 
                 ],
             }
         ]
