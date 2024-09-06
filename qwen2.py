@@ -85,7 +85,7 @@ class Qwen2(Data):
         model = self.get_model()
         input = self.get_input()
 
-        generated_ids = model.generate(**input, max_new_tokens=4096)
+        generated_ids = model.generate(**input, max_new_tokens=16384)
         generated_ids_trimmed = [
             out_ids[len(in_ids) :] for in_ids, out_ids in zip(input.input_ids, generated_ids)
         ]
@@ -99,18 +99,19 @@ class Qwen2(Data):
         for elem in self.get_outputs():
             cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
 
-            # usuwanie nadmiarowych spacji i znaków nowej linii
             cleaned_text = " ".join(cleaned_text.split())
             cleaned_text = "".join(cleaned_text.splitlines())
 
+            print("Generated text before loading to JSON:")
             print(cleaned_text)
 
-            # save the output to a JSON file
             try:
+                json_obj = json.loads(cleaned_text)
                 with open("output.json", "w") as f:
-                    json_obj = json.loads(cleaned_text)
                     json.dump(json_obj, f, indent=4)
                     print("JSON file saved successfully!")
-            except Exception as e:
-                print("Error saving JSON file:", e)
-                pass
+            except json.JSONDecodeError as e:
+                print("Error loading JSON:", e)
+                with open("error_output.txt", "w") as error_file:
+                    error_file.write(cleaned_text)
+                print("Błędny JSON zapisany w error_output.txt")
