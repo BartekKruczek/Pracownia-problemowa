@@ -120,7 +120,16 @@ class Qwen2(Data):
                     error_file.write(cleaned_text)
                 print("Błędny JSON zapisany w error_output.txt")
 
-                json_obj = self.repair_json(cleaned_text)
-                with open("output_repaired.json", "w") as f:
-                    json.dump(json_obj, f, indent=4)
-                    print("JSON file saved successfully!")
+            try:
+                json_obj = json.loads(cleaned_text)
+                my_json = json.dumps(json_obj, indent=4)
+                repaired_json = self.repair_json(my_json)
+
+                with open("repaired_output.json", "w") as f:
+                    f.write(repaired_json)
+                    print("Repaired JSON file saved successfully!")
+            except json.JSONDecodeError as e:
+                print("Error loading JSON:", e)
+                with open("error_repaired_output.txt", "w") as error_file:
+                    error_file.write(cleaned_text)
+                print("Błędny JSON zapisany w error_repaired_output.txt")
