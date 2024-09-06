@@ -1,6 +1,7 @@
 import torch
 import json
 import os
+import re
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -98,7 +99,16 @@ class Qwen2(Data):
     
     def repair_json(self, json_text: str) -> str:
         return repair_json(json_text)
+    
+    def repair_json_myself(self, json_text: str) -> str:
+        # naprawienie kluczy zawierających dwukropki w nazwach na poprawny format JSON, jak na razie testowo
+        text = re.sub(r'(?<!\")(\w+\s*\w+):', r'"\1":', json_text)
 
+        # zamiana spacji i myślników na podkreślenia w kluczach, jak na razie testowo
+        text = re.sub(r'(\w+)\s*-\s*(\w+)', r'\1_\2', text)
+
+        return text
+    
     def create_json(self) -> json:
         for elem in self.get_outputs():
             cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
@@ -110,14 +120,15 @@ class Qwen2(Data):
             print(cleaned_text)
 
             try:
-                json_obj = json.loads(cleaned_text)
+                fixed_json = self.repair_json_myself(cleaned_text)
+                json_obj = json.loads(fixed_json)
                 with open("output.json", "w") as f:
                     json.dump(json_obj, f, indent=4)
                     print("JSON file saved successfully!")
             except json.JSONDecodeError as e:
                 print("Error loading JSON:", e)
                 with open("error_output.txt", "w") as error_file:
-                    error_file.write(cleaned_text)
+                    error_file.write(fixed_json)
                 print("Błędny JSON zapisany w error_output.txt")
 
             try:
