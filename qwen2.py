@@ -5,6 +5,7 @@ import os
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from data import Data
+from fix_busted_json import repair_json
 
 class Qwen2(Data):
     def __init__(self) -> None:
@@ -94,6 +95,9 @@ class Qwen2(Data):
         )
         
         return output_text
+    
+    def repair_json(self, json_text: str) -> str:
+        return repair_json(json_text)
 
     def create_json(self) -> json:
         for elem in self.get_outputs():
@@ -115,3 +119,8 @@ class Qwen2(Data):
                 with open("error_output.txt", "w") as error_file:
                     error_file.write(cleaned_text)
                 print("Błędny JSON zapisany w error_output.txt")
+
+                json_obj = self.repair_json(cleaned_text)
+                with open("output_repaired.json", "w") as f:
+                    json.dump(json_obj, f, indent=4)
+                    print("JSON file saved successfully!")
