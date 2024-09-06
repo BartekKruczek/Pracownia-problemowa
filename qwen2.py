@@ -1,12 +1,9 @@
 import torch
 import json
-import os
-import re
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from data import Data
-from fix_busted_json import repair_json
 
 class Qwen2(Data):
     def __init__(self) -> None:
@@ -34,34 +31,41 @@ class Qwen2(Data):
         processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
         return processor
-    
-    def get_images_for_training(self, folder_path: str = None) -> list[str]:
-        images_path: list[str] = []
-
-        for root, dirs, files in os.walk(folder_path):
-            for file in sorted(files):
-                if file.endswith(".png"):
-                    images_path.append(os.path.join(root, file))
-        
-        return images_path
 
     def get_messages(self) -> list:
         df = self.get_xlsx_data(self.xlsx_path)
-
-        images_path = self.get_images_for_training(folder_path = df["Image folder path"].iloc[0])
-
         messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "image", "image": img_path} for img_path in images_path 
-                    ] + [
-                        {"type": "image", "image": "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png"},
-                        {"type": "json", "json": df["JSON file path"].iloc[0]},
-                        {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."},
-                    ],
-                }
-            ]
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_0.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_1.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_2.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
+                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
+                        "image": "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png"
+                    },
+                    {"type": "json", "json": df["JSON file path"].iloc[0]},
+                    {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."}, 
+                ],
+            }
+        ]
 
         return messages
 
@@ -87,7 +91,7 @@ class Qwen2(Data):
         model = self.get_model()
         input = self.get_input()
 
-        generated_ids = model.generate(**input, max_new_tokens=16384)
+        generated_ids = model.generate(**input, max_new_tokens=4096)
         generated_ids_trimmed = [
             out_ids[len(in_ids) :] for in_ids, out_ids in zip(input.input_ids, generated_ids)
         ]
@@ -96,51 +100,23 @@ class Qwen2(Data):
         )
         
         return output_text
-    
-    def repair_json(self, json_text: str) -> str:
-        return repair_json(json_text)
-    
-    def repair_json_myself(self, json_text: str) -> str:
-        # naprawienie kluczy zawierających dwukropki w nazwach na poprawny format JSON, jak na razie testowo
-        text = re.sub(r'(?<!\")(\w+\s*\w+):', r'"\1":', json_text)
 
-        # zamiana spacji i myślników na podkreślenia w kluczach, jak na razie testowo
-        text = re.sub(r'(\w+)\s*-\s*(\w+)', r'\1_\2', text)
-
-        return text
-    
     def create_json(self) -> json:
         for elem in self.get_outputs():
             cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
 
+            # usuwanie nadmiarowych spacji i znaków nowej linii
             cleaned_text = " ".join(cleaned_text.split())
             cleaned_text = "".join(cleaned_text.splitlines())
 
-            print("Generated text before loading to JSON:")
             print(cleaned_text)
 
+            # save the output to a JSON file
             try:
-                fixed_json = self.repair_json_myself(cleaned_text)
-                json_obj = json.loads(fixed_json)
-                with open("output.json", "w") as f:
-                    json.dump(json_obj, f, indent=4)
+                with open("output.json", "w", encoding='utf8') as f:
+                    json_obj = json.loads(cleaned_text)
+                    json.dump(json_obj, f)
                     print("JSON file saved successfully!")
-            except json.JSONDecodeError as e:
-                print("Error loading JSON:", e)
-                with open("error_output.txt", "w") as error_file:
-                    error_file.write(fixed_json)
-                print("Błędny JSON zapisany w error_output.txt")
-
-            try:
-                json_obj = json.loads(cleaned_text)
-                my_json = json.dumps(json_obj, indent=4)
-                repaired_json = self.repair_json(my_json)
-
-                with open("repaired_output.json", "w") as f:
-                    f.write(repaired_json)
-                    print("Repaired JSON file saved successfully!")
-            except json.JSONDecodeError as e:
-                print("Error loading JSON:", e)
-                with open("error_repaired_output.txt", "w") as error_file:
-                    error_file.write(cleaned_text)
-                print("Błędny JSON zapisany w error_repaired_output.txt")
+            except Exception as e:
+                print("Error saving JSON file:", e)
+                pass
