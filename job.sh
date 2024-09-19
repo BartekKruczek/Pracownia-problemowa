@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=PP1-qwen2
+#SBATCH --job-name=PP1qwen27B
 #SBATCH --time=00:10:00
 #SBATCH --account=plgexaile2-gpu-a100
 #SBATCH --partition=plgrid-gpu-a100

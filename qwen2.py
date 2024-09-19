@@ -10,16 +10,19 @@ class Qwen2(Data):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "mps")
         self.xlsx_path = "matching_dates_cleaned.xlsx"
+        self.cache_dir = "/net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa"
+        self.model_variant = "Qwen/Qwen2-VL-7B-Instruct"
 
     def __repr__(self) -> str:
         return "Klasa do obsługi modelu Qwen2"
 
     def get_model(self):
         model = Qwen2VLForConditionalGeneration.from_pretrained(
-            "Qwen/Qwen2-VL-2B-Instruct",
-            torch_dtype=torch.bfloat16,
+            self.model_variant,
+            torch_dtype = torch.bfloat16,
             # attn_implementation="flash_attention_2",
-            device_map=self.device,
+            device_map = "auto",
+            cache_dir = self.cache_dir,
         )
 
         return model
@@ -28,7 +31,12 @@ class Qwen2(Data):
         # min and max pixels for the processor to boost the performance
         min_pixels = 256*28*28
         max_pixels = 1280*28*28
-        processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+        processor = AutoProcessor.from_pretrained(
+            self.model_variant,
+            cache_dir = self.cache_dir, 
+            min_pixels = min_pixels, 
+            max_pixels = max_pixels,
+        )
 
         return processor
 
@@ -91,7 +99,7 @@ class Qwen2(Data):
         model = self.get_model()
         input = self.get_input()
 
-        generated_ids = model.generate(**input, max_new_tokens=4096)
+        generated_ids = model.generate(**input, max_new_tokens=1024)
         generated_ids_trimmed = [
             out_ids[len(in_ids) :] for in_ids, out_ids in zip(input.input_ids, generated_ids)
         ]
@@ -113,9 +121,9 @@ class Qwen2(Data):
 
             # save the output to a JSON file
             try:
-                with open("output.json", "w", encoding='utf8') as f:
+                with open("output.json", "w") as f:
                     json_obj = json.loads(cleaned_text)
-                    json.dump(json_obj, f)
+                    json.dump(json_obj, f, indent=4)
                     print("JSON file saved successfully!")
             except Exception as e:
                 print("Error saving JSON file:", e)
