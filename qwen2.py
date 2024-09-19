@@ -21,15 +21,25 @@ class Qwen2(Data):
         return "Klasa do obsługi modelu Qwen2"
 
     def get_model(self):
-        model = Qwen2VLForConditionalGeneration.from_pretrained(
-            self.model_variant,
-            torch_dtype = torch.bfloat16,
-            # attn_implementation="flash_attention_2",
-            device_map = "auto",
-            cache_dir = self.cache_dir,
-        )
+        if self.device.type == "cuda":
+            model = Qwen2VLForConditionalGeneration.from_pretrained(
+                self.model_variant,
+                torch_dtype = torch.bfloat16,
+                attn_implementation="flash_attention_2",
+                device_map = "auto",
+                cache_dir = self.cache_dir,
+            )
 
-        return model
+            return model
+        elif self.device.type == "mps" or self.device.type == "cpu":
+            model = Qwen2VLForConditionalGeneration.from_pretrained(
+                self.model_variant,
+                torch_dtype = torch.bfloat16,
+                device_map = "auto",
+                cache_dir = self.cache_dir,
+            )
+
+            return model
 
     def get_processor(self):
         if self.device.type == "mps" or self.device.type == "cpu":
