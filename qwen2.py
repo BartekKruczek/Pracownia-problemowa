@@ -8,10 +8,14 @@ from data import Data
 class Qwen2(Data):
     def __init__(self) -> None:
         super().__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "mps")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
         self.xlsx_path = "matching_dates_cleaned.xlsx"
-        self.cache_dir = "/net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa"
         self.model_variant = "Qwen/Qwen2-VL-7B-Instruct"
+
+        if self.device.type == "cuda":
+            self.cache_dir = "/net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa/.cache"
+        elif self.device.type == "mps" or self.device.type == "cpu":
+            self.cache_dir = "/Users/bk/Documents/Zajęcia (luty - czerwiec 2024)/Pracownia-problemowa/.cache"
 
     def __repr__(self) -> str:
         return "Klasa do obsługi modelu Qwen2"
@@ -28,17 +32,24 @@ class Qwen2(Data):
         return model
 
     def get_processor(self):
-        # min and max pixels for the processor to boost the performance
-        min_pixels = 256*28*28
-        max_pixels = 1280*28*28
-        processor = AutoProcessor.from_pretrained(
-            self.model_variant,
-            cache_dir = self.cache_dir, 
-            min_pixels = min_pixels, 
-            max_pixels = max_pixels,
-        )
+        if self.device.type == "mps" or self.device.type == "cpu":
+            min_pixels = 256*28*28
+            max_pixels = 1280*28*28
+            processor = AutoProcessor.from_pretrained(
+                self.model_variant,
+                cache_dir = self.cache_dir, 
+                min_pixels = min_pixels, 
+                max_pixels = max_pixels,
+            )
 
-        return processor
+            return processor
+        else:
+            processor = AutoProcessor.from_pretrained(
+                self.model_variant,
+                cache_dir = self.cache_dir,
+            )
+
+            return processor
 
     def get_messages(self) -> list:
         df = self.get_xlsx_data(self.xlsx_path)
