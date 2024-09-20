@@ -2,7 +2,9 @@
 
 ## To DO:
 - ~~łączyć w jedną całość wiele stron, nie tylko tekst z pierwszej z nich~~
-- lepszy pre processing tekstu
+- ~~lepszy pre processing tekstu~~
+- zmienić ściezke pamieci .cache na SCRATCHA
+- ulepszyc sposob i miejsce zapisu jsonów -> dodac date do nazwy i nowy folder
 
 ## Struktura folderów
 
