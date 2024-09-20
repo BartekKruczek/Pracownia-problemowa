@@ -163,17 +163,10 @@ class Qwen2(Data):
                 print("JSON file saved successfully!")
             except json.JSONDecodeError as e:
                 print("JSON decoding error:", e)
-                repaired_json_text = self.auto_repair_json_QWEN(cleaned_text, str(e))
-                print("Poprawiony JSON:", repaired_json_text)
-                try:
-                    json_obj = json.loads(repaired_json_text)
-                    with open("output.json", "w", encoding = "utf-8") as f:
-                        json.dump(json_obj, f, indent=4, ensure_ascii = False)
-                    print("Repaired JSON file saved successfully!")
-                except json.JSONDecodeError as e:
-                    print("JSON decoding error after repair:", e)
+                self.create_txt(text = cleaned_text, error = str(e))
             except Exception as e:
                 print("Error saving JSON file:", e)
+                self.create_txt(text = cleaned_text, error = str(e))
 
     def auto_repair_json_QWEN(self, text: str, error_message: str) -> str:
         messages = [

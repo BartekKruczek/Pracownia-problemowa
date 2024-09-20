@@ -186,6 +186,8 @@ def main():
     # json section
     qwen2.create_json()
 
+    # auto repair json section
+
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60
     print(f"Czas wykonania: {elapsed_time:.2f} minut")

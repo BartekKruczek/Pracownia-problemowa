@@ -375,3 +375,18 @@ class Data():
         except Exception as e:
             print(f"Function {self.get_xlsx_data.__name__} error: {e}")
             return None
+        
+    def create_txt(self, text: str, error: str) -> None:
+        """
+        Creates a txt file with text and error message, separated by a , character.
+        """
+        folder_path = "To_repair/txt_files"
+
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        file_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
+        file_path = os.path.join(folder_path, file_name)
+
+        with open(file_path, 'w', encoding = 'utf-8') as f:
+            f.write(f"{text}, {error}")
