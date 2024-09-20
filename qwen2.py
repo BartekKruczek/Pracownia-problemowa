@@ -24,7 +24,7 @@ class Qwen2(Data):
         if self.device.type == "cuda":
             model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_variant,
-                torch_dtype = torch.bfloat16,
+                torch_dtype = torch.float16,
                 attn_implementation="flash_attention_2",
                 device_map = "auto",
                 cache_dir = self.cache_dir,
@@ -34,7 +34,7 @@ class Qwen2(Data):
         elif self.device.type == "mps" or self.device.type == "cpu":
             model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_variant,
-                torch_dtype = torch.bfloat16,
+                torch_dtype = torch.float16,
                 device_map = "auto",
                 cache_dir = self.cache_dir,
             )
@@ -63,32 +63,38 @@ class Qwen2(Data):
 
     def get_messages(self) -> list:
         df = self.get_xlsx_data(self.xlsx_path)
+
+        # store images paths in a list
+        images: list[str] = [
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_0.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_1.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_2.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
+        "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png",
+        ]
+
         messages = [
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "image",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_0.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_1.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_2.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
-                        "image": "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
-                        "image": "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png"
+                        "image": images,
                     },
                     {"type": "json", "json": df["JSON file path"].iloc[0]},
                     {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."}, 
@@ -100,10 +106,9 @@ class Qwen2(Data):
 
     def get_input(self) -> dict:
         processor = self.get_processor()
-        text = processor.apply_chat_template(
-            self.get_messages(), tokenize=False, add_generation_prompt=True
-        )
-        image_inputs, video_inputs = process_vision_info(self.get_messages())
+        messages = self.get_messages()
+        text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
         inputs = processor(
             text=[text],
             images=image_inputs,
@@ -142,10 +147,11 @@ class Qwen2(Data):
 
             # save the output to a JSON file
             try:
+                json_obj = json.loads(cleaned_text)
                 with open("output.json", "w") as f:
-                    json_obj = json.loads(cleaned_text)
                     json.dump(json_obj, f, indent=4)
-                    print("JSON file saved successfully!")
+                print("JSON file saved successfully!")
+            except json.JSONDecodeError as e:
+                print("JSON decoding error:", e)
             except Exception as e:
                 print("Error saving JSON file:", e)
-                pass
