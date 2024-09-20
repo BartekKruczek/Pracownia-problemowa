@@ -82,12 +82,12 @@ class Qwen2(Data):
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_2.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
@@ -153,10 +153,9 @@ class Qwen2(Data):
             # usuwanie nadmiarowych spacji i znaków nowej linii
             cleaned_text = " ".join(cleaned_text.split())
             cleaned_text = "".join(cleaned_text.splitlines())
-
+            
             print(cleaned_text)
-
-            # save the output to a JSON file
+            
             try:
                 json_obj = json.loads(cleaned_text)
                 with open("output.json", "w", encoding = "utf-8") as f:
@@ -164,5 +163,65 @@ class Qwen2(Data):
                 print("JSON file saved successfully!")
             except json.JSONDecodeError as e:
                 print("JSON decoding error:", e)
+                repaired_json_text = self.auto_repair_json_QWEN(cleaned_text, str(e))
+                print("Poprawiony JSON:", repaired_json_text)
+                try:
+                    json_obj = json.loads(repaired_json_text)
+                    with open("output.json", "w", encoding = "utf-8") as f:
+                        json.dump(json_obj, f, indent=4, ensure_ascii = False)
+                    print("Repaired JSON file saved successfully!")
+                except json.JSONDecodeError as e:
+                    print("JSON decoding error after repair:", e)
             except Exception as e:
                 print("Error saving JSON file:", e)
+
+    def auto_repair_json_QWEN(self, text: str, error_message: str) -> str:
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "The following JSON is invalid and cannot be parsed. "
+                            f"The error message is: {error_message}. "
+                            "Please correct the JSON so that it is valid and can be parsed. Leave the language as Polish."
+                            "The invalid JSON is:\n```json\n"
+                            f"{text}\n```"
+                        ),
+                    },
+                ],
+            }
+        ]
+        
+        # sekcja odpowiedzialna za przetworzenie danych wejściowych
+        processor = self.get_processor()
+        text_input = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
+        inputs = processor(
+            text=[text_input],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        )
+        inputs = inputs.to(self.device)
+        
+        # sekcja odpowiedzialna za generowanie poprawionego JSON-a
+        model = self.get_model()
+        generated_ids = model.generate(**inputs, max_new_tokens=1024)
+        generated_ids_trimmed = [
+            out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+        output_text = processor.batch_decode(
+            generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+        )
+        
+        corrected_json_text = output_text[0]
+
+        # oczyszczenie JSON-a z nadmiarowych spacji i znaków nowej linii
+        corrected_json_text = corrected_json_text.replace("```json\n", "").replace("```", "").strip()
+        corrected_json_text = " ".join(corrected_json_text.split())
+        corrected_json_text = "".join(corrected_json_text.splitlines())
+        
+        return corrected_json_text
