@@ -1,5 +1,7 @@
 import torch
 import json
+import glob
+import os
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -168,7 +170,17 @@ class Qwen2(Data):
                 print("Error saving JSON file:", e)
                 self.create_txt(text = cleaned_text, error = str(e))
 
-    def auto_repair_json_QWEN(self, text: str, error_message: str) -> str:
+    def auto_repair_json_QWEN(self) -> str:
+        # get the newest .txt file from To_repair/txt_files directory
+        txt_files = glob.glob("To_repair/txt_files/*.txt")
+        latest_txt_file = max(txt_files, key = os.path.getctime)
+        print("Latest txt file:", latest_txt_file)
+
+        # load file: text message separated from error message using , separator
+        with open(latest_txt_file, "r", encoding = "utf-8") as f:
+            content = f.read()
+            text, error_message = content.split("<SEP>")
+
         messages = [
             {
                 "role": "user",
@@ -217,4 +229,13 @@ class Qwen2(Data):
         corrected_json_text = " ".join(corrected_json_text.split())
         corrected_json_text = "".join(corrected_json_text.splitlines())
         
-        return corrected_json_text
+        # generowanie poprawionego JSON-a
+        try:
+            json_obj = json.loads(corrected_json_text)
+            with open("output.json", "w", encoding = "utf-8") as f:
+                json.dump(json_obj, f, indent = 4, ensure_ascii = False)
+            print("JSON repaired file saved successfully!")
+        except json.JSONDecodeError as e:
+            print("JSON repaired decoding error:", e)
+        except Exception as e:
+            print("Error repair saving JSON file:", e)

@@ -389,4 +389,4 @@ class Data():
         file_path = os.path.join(folder_path, file_name)
 
         with open(file_path, 'w', encoding = 'utf-8') as f:
-            f.write(f"{text}, {error}")
+            f.write(f"{text}<SEP>{error}")
