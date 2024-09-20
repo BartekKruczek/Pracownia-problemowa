@@ -24,7 +24,7 @@ class Qwen2(Data):
         if self.device.type == "cuda":
             model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_variant,
-                torch_dtype = torch.float16,
+                torch_dtype = torch.bfloat16,
                 attn_implementation="flash_attention_2",
                 device_map = "auto",
                 cache_dir = self.cache_dir,
@@ -34,15 +34,26 @@ class Qwen2(Data):
         elif self.device.type == "mps" or self.device.type == "cpu":
             model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_variant,
-                torch_dtype = torch.float16,
+                torch_dtype = torch.bfloat16,
                 device_map = "auto",
                 cache_dir = self.cache_dir,
             )
 
             return model
 
-    def get_processor(self):
-        if self.device.type == "mps" or self.device.type == "cpu":
+    def get_processor(self, memory_save = True):
+        if (self.device.type == "mps" or self.device.type == "cpu") and memory_save:
+            min_pixels = 256*28*28
+            max_pixels = 1280*28*28
+            processor = AutoProcessor.from_pretrained(
+                self.model_variant,
+                cache_dir = self.cache_dir, 
+                min_pixels = min_pixels, 
+                max_pixels = max_pixels,
+            )
+
+            return processor
+        elif self.device.type == "cuda" and memory_save:
             min_pixels = 256*28*28
             max_pixels = 1280*28*28
             processor = AutoProcessor.from_pretrained(
@@ -72,33 +83,33 @@ class Qwen2(Data):
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_14.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_15.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_16.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_17.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_18.png",
         "lemkin-pdf/2014/WDU20140001589/O/D20141589_png/page_0.png",
+        ]
+
+        all_combined_image_contents = [{"type": "image", "image": image_path} for image_path in images]
+
+        all_combined_other_contents = [
+            {"type": "json", "json": df["JSON file path"].iloc[0]},
+            {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."},
         ]
 
         messages = [
             {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "image": images,
-                    },
-                    {"type": "json", "json": df["JSON file path"].iloc[0]},
-                    {"type": "text", "text": "Can you make json from last image similar to what I gave you in json type and comparing structure to all another images? As output give me just json structure which can be dumped. Use polish language and letters as well."}, 
-                ],
+            "role": "user",
+            "content": all_combined_image_contents + all_combined_other_contents,
             }
         ]
 
