@@ -83,11 +83,11 @@ class Qwen2(Data):
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
@@ -159,8 +159,8 @@ class Qwen2(Data):
             # save the output to a JSON file
             try:
                 json_obj = json.loads(cleaned_text)
-                with open("output.json", "w") as f:
-                    json.dump(json_obj, f, indent=4)
+                with open("output.json", "w", encoding = "utf-8") as f:
+                    json.dump(json_obj, f, indent = 4, ensure_ascii = False)
                 print("JSON file saved successfully!")
             except json.JSONDecodeError as e:
                 print("JSON decoding error:", e)
