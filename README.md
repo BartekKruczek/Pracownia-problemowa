@@ -20,6 +20,14 @@
     - pdf
     - _png folder
 
+## Do przeczytania i zrobienia w tym semestrze:
+- [dSpy](https://github.com/stanfordnlp/dspy)
+- [MLflow](https://mlflow.org/#core-concepts)
+- [LoRa](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
+- [LoRa paper](https://arxiv.org/abs/2106.09685)
+- [Adapters paper](https://arxiv.org/abs/2304.01933)
+- [Adapters Huggigface](https://huggingface.co/docs/hub/adapters)
+
 ## ViT -> Vision Transformer
 - [Pierwszy paper](https://paperswithcode.com/method/vision-transformer)
 - [Objaśnienie na medium](https://medium.com/@hansahettiarachchi/unveiling-vision-transformers-revolutionizing-computer-vision-beyond-convolution-c410110ef061)

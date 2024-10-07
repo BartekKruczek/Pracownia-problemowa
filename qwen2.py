@@ -15,7 +15,7 @@ class Qwen2(Data):
         self.model_variant = "Qwen/Qwen2-VL-7B-Instruct"
 
         if self.device.type == "cuda":
-            self.cache_dir = "/net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa/.cache"
+            self.cache_dir = "/net/tscratch/people/plgkruczek/.cache"
         elif self.device.type == "mps" or self.device.type == "cpu":
             self.cache_dir = "/Users/bk/Documents/Zajęcia (luty - czerwiec 2024)/Pracownia-problemowa/.cache"
 
@@ -176,7 +176,7 @@ class Qwen2(Data):
         latest_txt_file = max(txt_files, key = os.path.getctime)
         print("Latest txt file:", latest_txt_file)
 
-        # load file: text message separated from error message using , separator
+        # load file: text message separated from error message using <SEP> separator
         with open(latest_txt_file, "r", encoding = "utf-8") as f:
             content = f.read()
             text, error_message = content.split("<SEP>")
@@ -188,7 +188,7 @@ class Qwen2(Data):
                     {
                         "type": "text",
                         "text": (
-                            "The following JSON is invalid and cannot be parsed. "
+                            "The following JSON is invalid and cannot be parsed."
                             f"The error message is: {error_message}. "
                             "Please correct the JSON so that it is valid and can be parsed. Leave the language as Polish."
                             "The invalid JSON is:\n```json\n"
