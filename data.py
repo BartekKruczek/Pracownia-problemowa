@@ -390,3 +390,11 @@ class Data():
 
         with open(file_path, 'w', encoding = 'utf-8') as f:
             f.write(f"{text}<SEP>{error}")
+
+    def clear_cache_memory(self):
+        path: str = "/net/tscratch/people/plgkruczek/.cache"
+
+        try:
+            shutil.rmtree(path = path)
+        except Exception as e:
+            print(f"Error occured: {e}")

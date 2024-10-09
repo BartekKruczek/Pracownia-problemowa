@@ -170,6 +170,8 @@ class Qwen2(Data):
                 print("Error saving JSON file:", e)
                 self.create_txt(text = cleaned_text, error = str(e))
 
+        self.clear_cache_memory()
+
     def auto_repair_json_QWEN(self) -> str:
         # get the newest .txt file from To_repair/txt_files directory
         txt_files = glob.glob("To_repair/txt_files/*.txt")
@@ -239,3 +241,5 @@ class Qwen2(Data):
             print("JSON repaired decoding error:", e)
         except Exception as e:
             print("Error repair saving JSON file:", e)
+
+        self.clear_cache_memory()
