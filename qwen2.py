@@ -26,8 +26,8 @@ class Qwen2(Data):
         if self.device.type == "cuda":
             model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_variant,
-                torch_dtype = torch.bfloat16,
-                attn_implementation="flash_attention_2",
+                torch_dtype = torch.float16,
+                # attn_implementation = "flash_attention_2", # nie tykać, nie działa, olać jak na razie
                 device_map = "auto",
                 cache_dir = self.cache_dir,
             )
@@ -237,9 +237,12 @@ class Qwen2(Data):
             with open("output.json", "w", encoding = "utf-8") as f:
                 json.dump(json_obj, f, indent = 4, ensure_ascii = False)
             print("JSON repaired file saved successfully!")
+            print(f"Json: {corrected_json_text}")
         except json.JSONDecodeError as e:
             print("JSON repaired decoding error:", e)
+            print(f"Json: {corrected_json_text}")
         except Exception as e:
             print("Error repair saving JSON file:", e)
+            print(f"Json: {corrected_json_text}")
 
         self.clear_cache_memory()

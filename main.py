@@ -11,6 +11,9 @@ def main():
     warnings.filterwarnings("ignore")
     start_time = time.time()
 
+    # auto debug kernel
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+
     data = Data(json_path='lemkin-json-from-html', pdf_path=  'lemkin-pdf')
     utils = Utils(json_path='lemkin-json-from-html', pdf_path = 'lemkin-pdf')
     qwen2 = Qwen2()
