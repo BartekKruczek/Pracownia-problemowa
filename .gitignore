@@ -12,6 +12,7 @@ __pycache__/
 Output/
 *.xlsx
 test.py
+test_awq.py
 *.png
 *.jpg
 *.pdf
