@@ -10,4 +10,4 @@
 module load GCCcore/10.3.0 tesseract/5.4.1 CUDA/12.4.0
 source /net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa/.venv/bin/activate
 cd /net/pr2/projects/plgrid/plgglemkin/isap/Pracownia-problemowa
-python3 test_awq.py
+python3 main.py

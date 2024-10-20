@@ -187,10 +187,10 @@ def main():
     data.create_new_xlsx()
 
     # json section
-    # qwen2.create_json()
+    qwen2.create_json()
 
     # auto repair json section
-    qwen2.auto_repair_json_QWEN()
+    # qwen2.auto_repair_json_QWEN()
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) / 60

@@ -2,6 +2,7 @@ import torch
 import json
 import glob
 import os
+import time
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
@@ -149,6 +150,12 @@ class Qwen2(Data):
         return output_text
 
     def create_json(self) -> json:
+        mkdir_root = "JSON_files"
+        if not os.path.exists(mkdir_root):
+            os.makedirs(mkdir_root)
+
+        my_time = time.strftime("%Y-%m-%d_%H-%M-%S")
+
         for elem in self.get_outputs():
             cleaned_text = elem.replace("```json\n", "").replace("```", "").strip()
 
@@ -160,7 +167,7 @@ class Qwen2(Data):
             
             try:
                 json_obj = json.loads(cleaned_text)
-                with open("output.json", "w", encoding = "utf-8") as f:
+                with open(f"./JSON_files/{my_time}.json", "w", encoding = "utf-8") as f:
                     json.dump(json_obj, f, indent = 4, ensure_ascii = False)
                 print("JSON file saved successfully!")
             except json.JSONDecodeError as e:
@@ -170,7 +177,7 @@ class Qwen2(Data):
                 print("Error saving JSON file:", e)
                 self.create_txt(text = cleaned_text, error = str(e))
 
-        self.clear_cache_memory()
+        # self.clear_cache_memory()
 
     def auto_repair_json_QWEN(self) -> str:
         # get the newest .txt file from To_repair/txt_files directory
