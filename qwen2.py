@@ -13,7 +13,7 @@ class Qwen2(Data):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
         self.xlsx_path = "matching_dates_cleaned.xlsx"
-        self.model_variant = "Qwen/Qwen2-VL-7B-Instruct"
+        self.model_variant = "Qwen/Qwen2-VL-2B-Instruct-AWQ"
 
         if self.device.type == "cuda":
             self.cache_dir = "/net/tscratch/people/plgkruczek/.cache"
@@ -29,7 +29,7 @@ class Qwen2(Data):
                 self.model_variant,
                 torch_dtype = torch.float16,
                 # attn_implementation = "flash_attention_2", # nie tykać, nie działa, olać jak na razie
-                device_map = "auto",
+                device_map = 'cuda',
                 cache_dir = self.cache_dir,
             )
 
@@ -86,11 +86,11 @@ class Qwen2(Data):
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_3.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_4.png",
         "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_5.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
-        "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_6.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_7.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_8.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_9.png",
+        # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_10.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_11.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_12.png",
         # "lemkin-pdf/2014/WDU20140001826/T/D20141826TK_png/page_13.png",
@@ -139,7 +139,7 @@ class Qwen2(Data):
         model = self.get_model()
         input = self.get_input()
 
-        generated_ids = model.generate(**input, max_new_tokens=1024)
+        generated_ids = model.generate(**input, max_new_tokens=128)
         generated_ids_trimmed = [
             out_ids[len(in_ids) :] for in_ids, out_ids in zip(input.input_ids, generated_ids)
         ]
@@ -223,7 +223,7 @@ class Qwen2(Data):
         
         # sekcja odpowiedzialna za generowanie poprawionego JSON-a
         model = self.get_model()
-        generated_ids = model.generate(**inputs, max_new_tokens=1024)
+        generated_ids = model.generate(**inputs, max_new_tokens=128)
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
